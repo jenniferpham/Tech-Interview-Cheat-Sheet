@@ -1,20 +1,14 @@
 # Tech Interview Cheat Sheet
 
-This list is meant to be both a quick guide and reference for further research into these topics. It's basically a summary of that comp sci course you never took or forgot about, so there's no way it can cover everything in depth.
-
-## Contributing
-This is an open source, community project, and I am grateful for all the help I can get. If you find a mistake make a PR and please have a source so I can confirm the correction. If you have any suggestions feel free to open an issue.
-
-## Challenges
-This project now has actual code challenges! This challenges are meant to cover the topics you'll read below. Maybe you'll see them in an interview and maybe you won't. Either way you'll probably learn something new. [Click here for more](./challenges/README.md)
-
 # Table of Content
-- [Asymptotic Notation](#asymptotic-notation)
+- [Big O Notation](#o-notation)
 - [Data Structures](#data-structures)
+  - [String](#string)
   - [Array](#array)
   - [Linked List](#linked-list)
   - [Hash Table or Hash Map](#hash)
-  - [Binary Tree](#binary-tree)
+  - [Tree](#tree)
+  - [Graph](#graph)
 - [Algorithms](#algorithms)
   - [Algorithm Basics](#algorithm-basics)
   - [Search Algorithms](#search-algorithms)
@@ -25,14 +19,13 @@ This project now has actual code challenges! This challenges are meant to cover 
     - [Insertion Sort](#insertion-sort)
     - [Merge Sort](#merge-sort)
     - [Quick Sort](#quick-sort)
+- [Language/Frameworks](#language-frameworks)
 - [Additional Resources](#additional-resources)
 
 
-# <a id="asymptotic-notation"></a>Asymptotic Notation
+# <a id="o-notation"></a>Big O Notation
 ### Definition:
-Asymptotic Notation is the hardware independent notation used to tell the time and space complexity of an algorithm. Meaning it's a standardized way of measuring how much memory an algorithm uses or how long it runs for given an input.
 
-#### Complexities
 The following are the Asymptotic rates of growth from best to worst:
 - constant growth - ``O(1)`` Runtime is constant and does not grow with `n`
 - logarithmic growth – ``O(log n)`` Runtime grows logarithmically in proportion to `n`
@@ -65,7 +58,144 @@ Big-Theta refers to the tight bound of time or space complexity of an algorithm.
 - Best Case and Big Omega are generally not helpful since Best Cases are rare in the real world and lower bound might be very different than an upper bound.
 - Big-O isn't everything. On paper merge sort is faster than quick sort, but in practice quick sort is superior.
 
+#### Complexitiesrates of growth from best to worst:
+- constant growth - ``O(1)`` Runtime is constant and does not grow with `n`
+- logarithmic growth – ``O(log n)`` Runtime grows logarithmically in proportion to `n`
+- linear growth – ``O(n)`` Runtime grows directly in proportion to `n`
+- superlinear growth – ``O(n log n)`` Runtime grows in proportion _and_ logarithmically to `n`
+- polynomial growth – `O(n^c)` Runtime grows quicker than previous all based on `n`
+- exponential growth – `O(c^n)` Runtime grows even faster than polynomial growth based on `n`
+- factorial growth – `O(n!)` Runtime grows the fastest and becomes quickly unusable for even
+small values of `n`
+
 # <a id="data-structures"></a>Data Structures
+### <a id=="string"></a> String
+
+#### Algorithms
+- [**Reverse String**](https://leetcode.com/problems/reverse-string/)
+Write a function that reverses a string. The input string is given as an array of characters s.
+You must do this by modifying the input array in-place with O(1) extra memory.
+```
+var reverseString = function(s) {
+    if(s.length <= 1) {
+        return s;
+    }
+    // return s.reverse();
+    
+    // another way to do it is to loop through s array and swap and stop at middle index
+    // O(n)
+    // [0, 1, 2, 3]
+    const midIndex = Math.floor(s.length/2);
+    for (let i = 0; i < midIndex; i++) {
+        // swap far left and far right
+        [s[i], s[s.length - i - 1]] = [s[s.length - i - 1], s[i]]
+    }
+    return s;
+};
+```
+- [**Valid Parentheses**](https://leetcode.com/problems/valid-parentheses/)
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+Open brackets must be closed by the same type of brackets.
+Open brackets must be closed in the correct order.
+```
+var isOpenBracket = function(string) {
+    return string === '{' || string === '(' || string === '['
+}
+var isValid = function(s) {
+    // edge case
+    if(!s || s === 1) {
+        return false;
+    }
+    
+    // way to find closing bracket
+    const charMatch = {
+        ')': '(',
+        '}': '{',
+        ']': '['
+    }
+    const charMap = {
+        '(': 0,
+        '{': 0,
+        '[': 0
+    }
+    
+    // must be closed in correct order like a stack
+    let stack = ''
+    // for every beginning bracket, there must be a matching closing bracket AFTER it
+    for (let str of s) {
+       if(isOpenBracket(str)) {
+           stack += str;
+       } else {
+           // if closing bracket
+           const lastLetter = stack[stack.length - 1]
+           const matchingOpenBracket = charMatch[str]
+           if(lastLetter === matchingOpenBracket) {
+               // remove last letter
+               stack = stack.substring(0, stack.length - 1)
+           } else {
+               return false;
+           }
+       }
+    }
+    if(stack === '') {
+        return true;
+    } else {
+        return false;   
+    }
+};
+```
+- [**Longest Substring Without Repeating Characters**](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
+Given a string s, find the length of the longest substring without repeating characters.
+```
+var lengthOfLongestSubstring = function(s) {
+    // find the length of the longest substring without repeating characters
+    // loop through string
+    // save characters in a hash map so if the character is already there, u know it's a repeating cahracter
+    
+    // edge cases
+    if(typeof(s) !== 'string') {
+        return undefined;
+    }
+    if(s.length <= 1) {
+        return s.length;
+    }
+    let longestSubstring = 0;
+   //  let hashMap = {}; // maybe set instead of hash map because the number of times the characters appear doesn't matter
+      let set = new Set();
+        let substring = 0;
+    // loop through each letter as start of substring
+    for (const letter of s) {
+   
+        // reset substring if that is a repeating character
+        if(set.has(letter)) {
+            if(substring > longestSubstring) {
+                longestSubstring = substring;
+            }
+            
+            // reset the character set
+            set = new Set();
+            set.add(letter)
+            substring = 1;
+              // continue;
+        } else {
+            // increment if no repeating character
+            substring += 1;
+            set.add(letter);
+        }
+        if(substring > longestSubstring) {
+         longestSubstring = substring;
+      };
+            
+    }
+ 
+    return longestSubstring;
+    
+};
+```
+
 ### <a id="array"></a> Array
 #### Definition
 - Stores data elements based on an sequential, most commonly 0 based, index.
@@ -86,6 +216,181 @@ Big-Theta refers to the tight bound of time or space complexity of an algorithm.
 - Optimized Search: Linear array: `O(log n)`,  Dynamic array: `O(log n)`
 - Insertion:        Linear array: n/a,         Dynamic array: `O(n)`
 
+#### Algorithms
+- [**Two Sum**](https://leetcode.com/problems/two-sum/)
+Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+```
+var twoSum = function(nums, target) {
+    //  return the indices of the two numbers such that they add up to target.
+    // CONDITIONS/Questions
+    // each input would only have 1 solution
+    // cannot use same element twice
+    // does it have to be sorted?
+    
+    // BRUTE FORCE SOLUTION
+    // double loop through nums and add them together to see if they equal target
+    // if they do, return their index #
+    // for (const i = 0; i < nums.length; i++) {
+    //     for (const j = i+1; j < nums.length; j++) {
+    //         if(nums[j] + nums[i] === target) {
+    //             return [i, j]
+    //         }
+    //     }
+    // }
+    
+    // MORE EFFICIENT
+    // more efficient solution utilize a hash map
+    // with sums, there is only one other number that can add up to the target
+    // so if you store that number in hash map
+    // Does it matter if there are multiple numbers? let's assume yes. Or can the same only apppear once.
+    // key is the number in the array and value is the index of that number in the array
+    const hashMap = {};
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i];
+        const diff = target - num;
+        if(hashMap[diff] >= 0) {
+            return [i, hashMap[diff]]
+        }
+        
+        // store value for later
+        hashMap[num] = i;
+    }
+    return [];
+};
+```
+- [**Two Sum with Input Sorted Array**](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
+Given a 1-indexed array of integers numbers that is already sorted in non-decreasing order, find two numbers such that they add up to a specific target number. Let these two numbers be numbers[index1] and numbers[index2] where 1 <= index1 < index2 <= numbers.length.
+Return the indices of the two numbers, index1 and index2, added by one as an integer array [index1, index2] of length 2.
+The tests are generated such that there is exactly one solution. You may not use the same element twice.
+Your solution must use only constant extra space.
+```
+var twoSum = function(numbers, target) {
+    // numbers are sorted in asc order
+    // use 2 pointers: leftIndex and rightIndex
+    // if sum of values are the target -> return index
+    // if sum of values are larger than target -> move left
+    // if sum of values are smaller than target -> move right
+    
+    let leftIndex = 0;
+    let rightIndex = numbers.length - 1;
+    while(leftIndex <= rightIndex) {
+        const sum = numbers[rightIndex] + numbers[leftIndex]
+        if(sum === target) {
+            // sorted in smaller nubmer first
+            // not 0 based
+            return [leftIndex + 1, rightIndex + 1];
+        } else if (sum > target) {
+            // move left
+            rightIndex--;
+        } else {
+            // sum < target -> move right
+            leftIndex++;
+        }
+        if(rightIndex < 0 || leftIndex < 0 || rightIndex >= numbers.length || leftIndex >= numbers.length) {
+            break;
+        }
+    }
+    
+    // return indices of the 2 numbers that add up to the target
+    return null;
+};
+```
+- **Remove Duplicates from Sorted Array**
+Given an integer array nums sorted in non-decreasing order, remove the duplicates in-place such that each unique element appears only once. The relative order of the elements should be kept the same. Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.
+```
+var removeDuplicates = function(nums) {
+    // let set = new Set();
+    for (let i = 1; i < nums.length; i++) {
+        const currentNum = nums[i];
+        const prevNum = nums[i-1]
+        // compare currentNum and prevNum
+        if(prevNum === currentNum) {
+            // 1st param is index, number of deleting is second
+            nums.splice(i, 1);
+            i--;
+        }
+    }
+    return nums.length;
+};
+```
+- [**Contains Duplicate**](https://leetcode.com/problems/contains-duplicate/)
+Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.
+```
+var containsDuplicate = function(nums) {
+    const set = new Set(nums);
+    return nums.length !== set.size;
+};
+```
+- [**Single Number**](https://leetcode.com/problems/single-number/)
+Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.
+You must implement a solution with a linear runtime complexity and use only constant extra space.
+```
+var singleNumber = function(nums) {
+    let set = new Set()
+    // loop through nums array
+    // if it is not in set, then add to set
+    // if it is in set, remove from set
+    // set should have one element leftover
+    for (const num of nums) {
+        if(set.has(num)) {
+            set.delete(num)
+        } else {
+            set.add(num)
+        }
+    }
+    
+    let result;
+    for (let item of set.keys()) {
+        result = item;
+    }
+    return result;
+};
+```
+- [**Rotate Array**](https://leetcode.com/problems/rotate-array/)
+Given an array, rotate the array to the right by k steps, where k is non-negative.
+Example: 
+```
+Input: nums = [1,2,3,4,5,6,7], k = 3
+Output: [5,6,7,1,2,3,4]
+Explanation:
+rotate 1 steps to the right: [7,1,2,3,4,5,6]
+rotate 2 steps to the right: [6,7,1,2,3,4,5]
+rotate 3 steps to the right: [5,6,7,1,2,3,4]
+```
+```
+var rotate = function(nums, k) {
+    // get k items from the end and insert in beginning
+     for (let i = 0; i < k; i++) {
+        const lastItem = nums.pop();
+        // add item at end to the beginning of array
+        nums.unshift(lastItem);
+         // probably not optimal because unshift will create a shift in all indexes in array
+    }
+};
+```
+- [**Single Number II**]()
+Given an integer array nums where every element appears three times except for one, which appears exactly once. Find the single element and return it.
+
+You must implement a solution with a linear runtime complexity and use only constant extra space.
+```
+var singleNumber = function(nums) {
+    // nums is an array of integers that always has elements that appear 3 times except for 1 element
+    // every element appears 3 times except for 1
+    // use hash map to keep track of how many with key is the number and value is the count
+    const hashMap = {};
+    for (const num of nums) {
+        hashMap[num] = hashMap[num] ? (hashMap[num] + 1) : 1;
+    }
+    
+    // loop through keys in hashMap and look for what has value of 1
+    for (const [key, value] of Object.entries(hashMap)) {
+        if(value === 1) {
+            return key;
+        }
+    }
+};
+```
 
 ### <a id="linked-list"></a> Linked List
 #### Definition
@@ -133,9 +438,9 @@ Big-Theta refers to the tight bound of time or space complexity of an algorithm.
 - Insertion:        Hash Tables: `O(1)`
 
 
-### <a id="binary-tree"></a> Binary Tree
+### <a id="tree"></a> Tree
 #### Definition
-- Is a tree like data structure where every node has at most two children.
+- **Binary Tree**: tree like data structure where every node has at most two children.
   - There is one left and right child node.
 
 #### What you need to know
@@ -154,6 +459,199 @@ Big-Theta refers to the tight bound of time or space complexity of an algorithm.
 - Search:    Binary Search Tree: `O(log n)`
 - Insertion: Binary Search Tree: `O(log n)`
 
+#### Class
+```
+class TreeNode {
+  constructor(val) {
+    this.val = val;
+    this.children = [];
+  }
+}
+
+class Tree {
+  constructor(val) {
+    this.root = null;
+  }
+}
+```
+```
+class BinaryTreeNode {
+  constructor(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+  }
+}
+```
+
+#### Breadth-First Search (BFS)
+- visit nodes by row
+```
+function breadthFirstSearch(root) {
+  let queue = []; // to keep track of children in rows. Queue follows FIFO principle.
+  let result = [];
+  let node;
+  queue.push(root);  // start the queue
+  while(queue.length) {
+    node = queue.shift(); // dequeue - remove first item in queue
+    result.push(node);  // put the first item in queue into results array
+    if(node.left) queue.push(node.left);
+    if(node.right) queue.push(node.right);
+  }
+  return result;
+}
+```
+
+#### Depth-First Search (DFS)
+- starts at root to end of branch before backtracking
+1. **In-Order** - left, root, right
+2. **Pre-Order** - root, left, right
+3. **Post-Order** - left, right, root
+
+```
+function inOrderDFS() {
+  let visited = [];
+
+  function traverse(node) {
+    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
+    visited.push(node.val);
+    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
+  }
+
+  traverse(root);
+  return visited;
+}
+```
+
+```
+// parent node before child nodes (left, right)
+function preOrderDFS() {
+  let visited = [];
+  
+  function traverse(node) {
+    visited.push(node.val);
+    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
+    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
+  }
+
+  traverse(root);
+  return visited;
+}
+```
+
+```
+// parent node after child nodes (left, right)
+function postOrderDFS() {
+  let visited = [];
+  
+  function traverse(node) {
+    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
+    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
+    visited.push(node.val);
+  }
+
+  traverse(root);
+  return visited;
+}
+```
+#### Algorithms
+- **Height of Binary Tree**
+```
+// recursive solution
+// time 0(n) - # of nodes, space: 0(h) - height of tree
+function heightBinaryTree(node {
+  if (root === null) return 0;
+  // recur for left and right subtree to consider maximum height
+  return 1 + Math.max(height(node.left), height(node.right));
+})
+```
+- **Is it the same tree?**
+Given 2 roots p and q, check if they are the same or not.  Same is structurally identical and all have the same values.
+```
+// Recursive solution
+// time 0(n) - # of nodes because you visit every node, space: 0(log(n)) for balanced tree and 0(n) for completely unbalanced tree to keep recursion stack
+function isSameTree(p, q) {
+  // base case
+  if (p === null && q === null) return true;
+  if (p === null || q === null) return false;
+
+  if (p.val !== q.val) return false;
+
+  return isSameTree(p.right, q.right) && isSameTree(p.left, q.left);
+}
+```
+```
+// Iterative solution
+// time 0(n) - # of nodes because you visit every node, space: 0(log(n)) for balanced tree and 0(n) for completely unbalanced tree to keep recursion stack
+
+// helper function
+function isSameNodeVal(p,q) 
+  // base case
+  if (p === null && q === null) return true;
+  if (p === null || q === null) return false;
+  if (p.val !== q.val) return false;
+  return true;
+}
+function isSameTree(p, q) {
+  if(!isSameNodeVal(p,q)) return false; // compare both roots
+  // create queues for both p and q and add root to them
+  let pQueue = [p];
+  let qQueue = [q];
+  while (pQueuee.length >= 1) {
+    // remove first element from both queues
+    p = pQueue.shift();
+    q = qQueue.shift();
+
+    if(!isSameNodeVal9p,q) return false;
+    if(p) {
+      pQueue.push(p.left);
+      pQueue.push(q.right);
+    }
+    if(q) {
+      qQueue.push(q.left);
+      qQueue.push(q.right);
+    }
+  }
+  return true;
+}
+```
+- **Is the tree symmetric?**
+isSymmetric if root is same and right subtree is reflection of left subtree
+```
+// Recursive solution
+// time 0(n) - # of nodes because you visit every node, space: 0(log(n)) for balanced tree and 0(n) for completely unbalanced tree to keep recursion stack
+function isSymmetric(root) {
+  function isMirror(node1, node 2) {
+    if(node1 === null && node2 === null) return true;
+    if(node1 === null || node2 === null) return false;
+    return (node1.val === node2.val) && isMirror(node1.left, node2.right) && isMirror(node1.right, node2.left);
+  }
+  return isMirror(root, root);
+}
+```
+```
+// Iterative solution
+// time 0(n) - # of nodes because you visit every node, space: 0(log(n)) for balanced tree and 0(n) for completely unbalanced tree to keep recursion stack
+
+function isSymmetric(root) {
+  const leftQueue = [root.left];
+  const rightQueue = [root.right];
+  while(leftQueue.length && rightQueue.length) {
+    // take first node from the queues
+    const leftNode = leftQueue.shift();
+    const rightNode = rightQueue.shift();
+
+    if(!leftNode && !rightNode) continue; //skip
+    if(!leftNode || !rightNode || (leftNode.val !== rightNode.val)) return false;
+    
+    leftQueue.push(leftNode.left, leftNode.right);
+    rightQueue.push(rightNode.right, rightNode.left);  // push in opposite order
+  }
+  return true;
+  }
+  return true;
+}
+```
 
 # <a id="algorithms"></a> Algorithms
 ## <a id="algorithm-basics"></a> Algorithm Basics
