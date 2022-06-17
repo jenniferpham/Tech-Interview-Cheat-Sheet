@@ -6,6 +6,8 @@
   - [String](#string)
   - [Array](#array)
   - [Linked List](#linked-list)
+  - [Stack](#stack)
+  - [Queue](#queue)
   - [Hash Table or Hash Map](#hash)
   - [Tree](#tree)
   - [Graph](#graph)
@@ -395,12 +397,16 @@ var singleNumber = function(nums) {
 ### <a id="linked-list"></a> Linked List
 #### Definition
 - Stores data with **nodes** that point to other nodes.
-  - Nodes, at its most basic it has one datum and one reference (another node).
   - A linked list _chains_ nodes together by pointing one node's reference towards another node.
 
 #### What you need to know
 - Designed to optimize insertion and deletion, slow at indexing and searching.
-- **Doubly linked list** has nodes that also reference the previous node.
+- excellent alternative to arrays when insertion and deletion at beginning are frequenely required (array insertion at beginning requires all indices after to re-index, which is inefficient) (Arrays contain built-in index whereas linked lists don't) 
+- Linked lists are the foundation of Stacks and Queues
+- **Single-linked list** vs **double-linked list**
+  - Nodes on single-linked list have `.val` and `.next`, while double-linked lists have that and `.prev` property
+  - DLL is better than SLL for finding nodes (done in half the time because you can start at the tail instead of head)
+  - DLL takes up more memory considering extra pointer
 - **Circularly linked list** is simple linked list whose **tail**, the last node, references the **head**, the first node.
 - **Stack**, commonly implemented with linked lists but can be made from arrays too.
   - Stacks are **last in, first out** (LIFO) data structures.
@@ -417,6 +423,253 @@ var singleNumber = function(nums) {
 - Prepend:          Linked Lists: `O(1)`
 - Insertion:        Linked Lists: `O(n)`
 
+#### Class
+```
+class LinkedList {
+  constructor() {
+    this.head = null;
+    this.size = 0;
+  }
+}
+
+class Node = {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
+    this.prev = null; // exists on double-linked lists only
+  }
+}
+```
+
+#### Algorithms
+- **Get Node By Index**
+```
+function getNodeByIndex(index) {
+  // check if index is within bounds
+  if(index < 0 || index >= this.length) return null; 
+
+  let counter = 0;
+  let currentNode = this.head;
+  while (counter !== index) {
+    currentNode = currentNode.next;
+    counter++;
+  }
+  return currentNode;
+}
+```
+
+- **Set Node By Index**
+```
+function setNodeByIndex(index, val) {
+  let foundNode = this.get(index);
+  if(foundNode) {
+    foundNode.val = value;
+    return true;
+  }
+  return false;
+}
+```
+
+- **Reverse SLL** 
+```
+// loop through linked list from head to tail, changing every node's next property to what their previous node was
+// swap head and tail props
+```
+- **Remove duplicates from unsorted linked list**
+```
+function removeDuplicates(linkedList) {
+  let linkedListMap = {}; // 0(1) access
+  let currentNode = linkedList.head;
+  let prevNode = null;
+  while(currentNode !== null) {
+    if(linkedListMap[currentNode.val] === true) {
+      prevNode.next = currentNode.next;  // remove this node
+    } else {
+      linkedListMap[currentNode.val] = true
+    }
+    prevNode = currentNode;
+    currentNode = currentNode.enxt;
+  }
+  return linkedList;
+}
+```
+- **Return Kth to Last**
+Find kth to last element of singly linked list
+This solution is 0(n) time and 0(1) space
+```
+// use 2 pointers, a slow pointer and fast pointer
+// make it so p1 and p2 are k nodes apart
+// when p1 hits end of linked list, p2 will be length - k notes into the list or k nodes from teh end
+function kthToLast(linkedList, k) {
+  let p1 = head;
+  let p2 = head;
+  // move p1 pointer k nodes into the list
+  for (let i = 0; i < k; i++) {
+    if(p1 === null) return null; // out of bounds!
+    p1 = p1.next;  // the check above will prevent error of calling property on undefined
+  }
+  // move both pointers at same pace here
+  // when p1 hits end, p2 will be at the correct result element
+  while (p1 !== null) {
+    p1 = p1.next;
+    p2 = p2.next;
+  }
+  return p2;
+}
+```
+- **Delete middle node of single-linked list**
+```
+function deleteMiddleNode(node) {
+  if (node === null || node.next === null) return false;
+
+  // make copy of the next node;
+  let nextNode = node.next;  
+
+  // make current nodehave same properties as next node
+  node.val = nextNode.val;  
+  node.next = nextNode.next;
+
+  return true;
+}
+// this cannot be solved if node to be deleted is the tail or last node in single-linked list because we have no access to prev property
+```
+- **Partition**
+All elements less than x on left partition and . Parittion value can be in right partition. Doesn't have to be in between.
+```
+/*
+array shifts can be very expensive but linked list much easier
+create 2 linked lists
+1) elements < x
+2) elements >= x
+combine the 2 linked lists
+*/
+
+function partition(node, x) {
+  let head = node;
+  let tail = node;
+  while(node !== null) {
+    let nextNode = node.enxt;
+    if(node.data < x) {
+      // insert node at head;
+      node.next = head;
+      head = newNode;
+    } else { // greater than or equal to x
+    //insert node at tail
+      tail.next = newNode;
+      tail = newNode;
+    }
+    node = nextNode;
+  }
+  tail.next = null;
+  return head;  // return linked list
+}
+```
+- **Sum Lists**
+Adding 2 linked lists together and returning a linked list
+```
+/*
+- consider that if they are different sizes, you will have to insert 0's before to pad
+- compare lengths of list at beginning
+- pad shorter list with 0's
+*/
+
+```
+- **Intersecting linekd lists**
+```
+/*
+- if 2 linked lists, intersect, they will share same tail (reference is the same, checking value of tail is not enough)
+- since both lined lists might not be same size or length, you ignore the difference (longer SLL minus shorter SLL) and move pointer to another node so that both lists are the same length;
+1) run through each linked list to get lengths and tails
+2) compare tails by reference (not value). If they're not tehs ame -> no intersection and immediately return
+3) set 2 pointers to start of each SLL, but move pointer to longer SLL so that both lists are same size
+4) traverse on each linked list until pointers are thes ame and pointer on shorter and longer SSL collide or are equal.
+- 0(A + B) time and 0(1) space
+  - A is length of first SLL
+  - B is length of second SLL
+*/
+```
+
+- **Beginning of circular linked list**
+```
+- Collision spot is k nodes from loop start
+1) create 2 pointers (fast and slow pointer)
+2) Slow Runner - 0 steps into loop
+Fast Runner - k steps into loop
+SLow Runner - k steps behidn Fast Runner
+Fast Runner - loop_size - k steps behind Slow Runner
+Fast Runner eventually catches up to Slow RUnner at rate of 1 step per unit of time
+3) Move FastPointer at 2 stesps vs Slow pointer at 1 step/time
+WHen they collide, move SLowPointer to LinkedList head. Keep Fast pointer where it is.
+Move SLow pointer and fast pointer at 1 step/time -> return collision spot.
+```
+
+### <a id="stack"></a> Stacks (LIFO)
+#### What you need to know
+- insertion and removal = 0(1)
+- searching and access = 0(n) -> if you need to search or access within the stack, use a different structure
+- can push and pop with array in javascript
+- for pop() and push() in a linked list, you can add to the head so it is optimized for both SLL and DLL
+#### Methods
+- .pop() - remove top item
+- .push(item) - adds item to top of stack
+- .peek() - return top of stack
+- .isEmpty() - return true only if stack is empty
+#### Uses
+- Javascript call stack or recursion
+- routing (browser history object)
+- undo/redo
+- versioning
+#### Class
+```
+class Queue {
+  constructor() {
+    this.first = null;
+    this.last = null;
+    this.size = 0;
+  }
+}
+
+class Node {
+  constructor(val) {
+    this.val = null;
+    this.next = null;
+  }
+}
+```
+
+### <a id="queue"></a> Queues (FIFO)
+#### What you need to know
+- insertion and removal = 0(1)
+- searching and access = 0(n) -> if you need to search or access within the queue, use a different structure
+- don't really want to implement queue as an array because inserting and removing the first item requires re-indexing all items afterwards, which is 0(n) vs 0(1) with queue or linked list
+#### Methods
+- .enqueue() - add item to end of line (get in line) (similar to array.unshift() add to beg)
+- .dequeue() - remove first in line (get out of line)(remove head) (similar to array.pop() remove from end)
+- .pop() - remove first item in queue
+- .push(item) - adds item to end of queue
+- .peek() - return first item
+- .isEmpty() - return true only if queue is empty
+#### Uses
+- background tests
+- print queue
+- uploading files
+#### Class
+```
+class Queue {
+  constructor() {
+    this.first = null;
+    this.last = null;
+    this.size = 0;
+  }
+}
+
+class Node {
+  constructor(val) {
+    this.val = null;
+    this.next = null;
+  }
+}
+```
 
 ### <a id="hash"></a> Hash Table or Hash Map
 #### Definition
@@ -440,8 +693,14 @@ var singleNumber = function(nums) {
 
 ### <a id="tree"></a> Tree
 #### Definition
+- data structure that consists of nodes in parent/child relationship (if siblings are connected, then that's a **graph**)
+  - tree is a type of graph, but not the other way around
+  lists-linear vs trees - nonlinear
+  - each tree has a root node
+- **Leaf node** - no children
+- **Edge** - connection btw 1 node to another
 - **Binary Tree**: tree like data structure where every node has at most two children.
-  - There is one left and right child node.
+- There is one left and right child node.
 
 #### What you need to know
 - Designed to optimize searching and sorting.
@@ -453,6 +712,13 @@ var singleNumber = function(nums) {
   - Right child has a key greater than its parent node.
   - There can be no duplicate node.
   - Because of the above it is more likely to be used as a data structure than a binary tree.
+
+#### Uses
+- HTML Dom
+- network routing
+- computer folders
+- artificial intelligence
+- json
 
 #### Time Complexity
 - Indexing:  Binary Search Tree: `O(log n)`
@@ -655,6 +921,8 @@ function isSymmetric(root) {
 
 # <a id="algorithms"></a> Algorithms
 ## <a id="algorithm-basics"></a> Algorithm Basics
+### Techniques
+- **Sliding window**
 ### Recursive Algorithms
 #### Definition
 - An algorithm that calls itself in its definition.
