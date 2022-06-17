@@ -11,14 +11,16 @@
   - [Queue](#queue)
   - [Tree](#tree)
     - [Binary Tree](#binary-tree)
+    - [Breadth First Search](#breadth-first-search)
+    - [Depth First Search](#depth-first-search)
     - [Binary Heaps (min-heap and max-heap)](#binary-heap)
     - [Tries (Prefix Tries)](#prefix-tries)
   - [Graph](#graph)
 - [Algorithms](#algorithms)
   - [Algorithm Basics](#algorithm-basics)
-  - [Search Algorithms](#search-algorithms)
-    - [Breadth First Search](#breadth-first-search)
-    - [Depth First Search](#depth-first-search)
+  - [Searching](#searching)
+    - [Linear Search](#linear-search)
+    - [Binary Search](#binary-search)
   - [Sorting Algorithms](#sorting-algorithms)
     - [Selection Sort](#selection-sort)
     - [Insertion Sort](#insertion-sort)
@@ -1101,6 +1103,50 @@ run 2 simultaneous breadth-first searches, 1 from each node -> when their search
 
 # <a id="algorithms"></a> Algorithms
 ## <a id="algorithm-basics"></a> Algorithm Basics
+## <a id="searching"></a> Searching
+### <a id="linear-search">Linear Search</a>
+- loop through all items in array once to see if there is a match
+- Avg and worst 0(n) - if it is found towards the end
+- Best 0(1) - if it is found early
+```
+function linearSearch(arr, val) {
+  for (let i = 0; i<arr.length; i++) {
+    if (arr[i] === val) {
+      return 1;
+    }
+  }
+  return -1;
+}
+```
+
+### <a id="binary-search">Binary Search</a>
+- input is **sorted array**
+- search for elements by comparing midpoint of array -> if less, search left half, and if more, search right half -> get new middle and cut in half again until you find it
+- Runtime:
+  - avg and worst O(log n)
+    - if you double nodes -> add only 1 more step
+    - 2^x = n  #x: 2^5 = 32
+  - Best 0(1)
+
+```
+function binarySearch(arr, elem) {
+  let leftIndex = 0; 
+  let rightIndex = arr.length - 1;
+  let middleIndex;
+  while (leftIndex <= rightIndex) {
+    middleIndex = Math.floor((leftIndex + rightIndex)/2)
+    if(elem < arr[middleIndex]) {
+      rightIndex = middleIndex - 1;
+    } else if (elem > arr[middleIndex]) {
+      leftIndex = middleIndex + 1;
+    } else {
+      return middle;
+    }
+    return -1 // error or can't find
+  }
+}
+```
+
 ### Techniques
 - **Sliding window**
 ### Recursive Algorithms
