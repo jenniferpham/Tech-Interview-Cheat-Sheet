@@ -5,11 +5,14 @@
 - [Data Structures](#data-structures)
   - [String](#string)
   - [Array](#array)
+  - [Hash Table or Hash Map](#hash)
   - [Linked List](#linked-list)
   - [Stack](#stack)
   - [Queue](#queue)
-  - [Hash Table or Hash Map](#hash)
   - [Tree](#tree)
+    - [Binary Tree](#binary-tree)
+    - [Binary Heaps (min-heap and max-heap)](#binary-heap)
+    - [Tries (Prefix Tries)](#prefix-tries)
   - [Graph](#graph)
 - [Algorithms](#algorithms)
   - [Algorithm Basics](#algorithm-basics)
@@ -21,6 +24,7 @@
     - [Insertion Sort](#insertion-sort)
     - [Merge Sort](#merge-sort)
     - [Quick Sort](#quick-sort)
+- [System Design and Scalability](#system-design)
 - [Language/Frameworks](#language-frameworks)
 - [Additional Resources](#additional-resources)
 
@@ -48,10 +52,6 @@ Visualized below; the x-axis representing input size and the y-axis representing
 
 #### Big-O notation
 Big-O refers to the upper bound of time or space complexity of an algorithm, meaning it worst case runtime scenario. An easy way to think of it is that runtime could be better than Big-O but it will never be worse.
-#### Big-Ω (Big-Omega) notation
-Big-Omega refers to the lower bound of time or space complexity of an algorithm, meaning it is the best runtime scenario. Or runtime could worse than Big-Omega, but it will never be better.
-#### Big-θ (Big-Theta) notation
-Big-Theta refers to the tight bound of time or space complexity of an algorithm. Another way to think of it is the intersection of Big-O and Big-Omega, or more simply runtime is guaranteed to be a given complexity, such as `n log n`.
 
 #### What you need to know
 - Big-O and Big-Theta are the most common and helpful notations
@@ -394,6 +394,27 @@ var singleNumber = function(nums) {
 };
 ```
 
+### <a id="hash"></a> Hash Table or Hash Map
+#### Definition
+- Stores data with key value pairs.
+- **Hash functions** accept a key and return an output unique only to that specific key.
+  - This is known as **hashing**, which is the concept that an input and an output have a one-to-one correspondence to map information.
+  - Hash functions return a unique address in memory for that data.
+
+#### What you need to know
+- Designed to optimize searching, insertion, and deletion.
+- **Hash collisions** are when a hash function returns the same output for two distinct inputs.
+  - All hash functions have this problem.
+  - This is often accommodated for by having the hash tables be very large.
+- Hashes are important for associative arrays and database indexing.
+
+#### Time Complexity
+- Indexing:         Hash Tables: `O(1)`
+- Search:           Hash Tables: `O(1)`
+- Insertion:        Hash Tables: `O(1)`
+
+
+
 ### <a id="linked-list"></a> Linked List
 #### Definition
 - Stores data with **nodes** that point to other nodes.
@@ -671,26 +692,6 @@ class Node {
 }
 ```
 
-### <a id="hash"></a> Hash Table or Hash Map
-#### Definition
-- Stores data with key value pairs.
-- **Hash functions** accept a key and return an output unique only to that specific key.
-  - This is known as **hashing**, which is the concept that an input and an output have a one-to-one correspondence to map information.
-  - Hash functions return a unique address in memory for that data.
-
-#### What you need to know
-- Designed to optimize searching, insertion, and deletion.
-- **Hash collisions** are when a hash function returns the same output for two distinct inputs.
-  - All hash functions have this problem.
-  - This is often accommodated for by having the hash tables be very large.
-- Hashes are important for associative arrays and database indexing.
-
-#### Time Complexity
-- Indexing:         Hash Tables: `O(1)`
-- Search:           Hash Tables: `O(1)`
-- Insertion:        Hash Tables: `O(1)`
-
-
 ### <a id="tree"></a> Tree
 #### Definition
 - data structure that consists of nodes in parent/child relationship (if siblings are connected, then that's a **graph**)
@@ -699,19 +700,11 @@ class Node {
   - each tree has a root node
 - **Leaf node** - no children
 - **Edge** - connection btw 1 node to another
-- **Binary Tree**: tree like data structure where every node has at most two children.
-- There is one left and right child node.
 
 #### What you need to know
 - Designed to optimize searching and sorting.
 - A **degenerate tree** is an unbalanced tree, which if entirely one-sided, is essentially a linked list.
 - They are comparably simple to implement than other data structures.
-- Used to make **binary search trees**.
-  - A binary tree that uses comparable keys to assign which direction a child is.
-  - Left child has a key smaller than its parent node.
-  - Right child has a key greater than its parent node.
-  - There can be no duplicate node.
-  - Because of the above it is more likely to be used as a data structure than a binary tree.
 
 #### Uses
 - HTML Dom
@@ -719,11 +712,6 @@ class Node {
 - computer folders
 - artificial intelligence
 - json
-
-#### Time Complexity
-- Indexing:  Binary Search Tree: `O(log n)`
-- Search:    Binary Search Tree: `O(log n)`
-- Insertion: Binary Search Tree: `O(log n)`
 
 #### Class
 ```
@@ -740,6 +728,29 @@ class Tree {
   }
 }
 ```
+
+### <a id="binary-tree"></a> Binary Search Tree
+- **Binary Tree**: tree-like data structure where every node has up to 2 child nodes (1 left and 1 right child node)
+- different from ternary tree and n-ary trees
+- **Binary search trees**
+  - 1 type of binary tree where all left descendants have a value sm
+  - All left descendants < parent node
+  - all right descendants > parent node
+  - Clarify with interviewer
+    - are there duplicate values?
+    - if there are child nodes with same value as parent node, does it belong on left or right side?
+- **Balanced Tree**: balanced enough to ensure 0(log n) times for insertion and search/find
+- **Complete binary tree**: tree in which every level is filled from left to right (except lowest level) but must fill left before right
+- **Full binary tree**: every node has 0 or 2 children
+- **Perfect binary tree**: both full and complete, each level has max # of nodes (exactly (2^k - 1) nodes)
+
+#### Time Complexity
+- Search:    Binary Search Tree: `O(log n)`
+- Insertion: Binary Search Tree: `O(log n)`
+- if you double the nodes, you increase 1 extra step
+- worst case scenario is if the binary tree is not balanced (like SLL) -> 0(n) for search
+
+#### Class
 ```
 class BinaryTreeNode {
   constructor(val) {
@@ -917,6 +928,37 @@ function isSymmetric(root) {
   }
   return true;
 }
+```
+
+- **Is binary tree height-balanced?**
+Given a binary tree, determine if it is height-balanced.
+For this problem, a height-balanced binary tree is defined as: a binary tree in which the left and right subtrees of every node differ in height by no more than 1.
+```
+const ckeckHeight = node => {
+  if (node === null) return 0;
+  
+  const left = ckeckHeight(node.left);
+  const right = ckeckHeight(node.right);
+  
+  if (
+    // if a previous call has returned false,
+    // we need to pass false all the way up
+    left === false ||
+    right === false ||
+    Math.abs(left - right) > 1
+  ) {
+    return false;
+  }
+  
+  // height of a node
+  return Math.max(left, right) + 1;
+};
+
+const isBalanced = root => {
+  if (root === null) return true;
+  
+  return ckeckHeight(root) !== false;
+};
 ```
 
 # <a id="algorithms"></a> Algorithms
@@ -1157,3 +1199,6 @@ This algorithm never needed to compare all the differences to one another, savin
 
 ## <a id="additional-resources"></a>Additional Resources
 [Khan Academy's Algorithm Course](https://www.khanacademy.org/computing/computer-science/algorithms)
+
+### <a id="system-design"></a>System Design and Scalability
+#### Definition
