@@ -761,77 +761,38 @@ class BinaryTreeNode {
 }
 ```
 
-#### Breadth-First Search (BFS)
-- visit nodes by row
-```
-function breadthFirstSearch(root) {
-  let queue = []; // to keep track of children in rows. Queue follows FIFO principle.
-  let result = [];
-  let node;
-  queue.push(root);  // start the queue
-  while(queue.length) {
-    node = queue.shift(); // dequeue - remove first item in queue
-    result.push(node);  // put the first item in queue into results array
-    if(node.left) queue.push(node.left);
-    if(node.right) queue.push(node.right);
-  }
-  return result;
-}
-```
 
-#### Depth-First Search (DFS)
-- starts at root to end of branch before backtracking
-1. **In-Order** - left, root, right
-2. **Pre-Order** - root, left, right
-3. **Post-Order** - left, right, root
-
-```
-function inOrderDFS() {
-  let visited = [];
-
-  function traverse(node) {
-    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
-    visited.push(node.val);
-    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
-  }
-
-  traverse(root);
-  return visited;
-}
-```
-
-```
-// parent node before child nodes (left, right)
-function preOrderDFS() {
-  let visited = [];
-  
-  function traverse(node) {
-    visited.push(node.val);
-    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
-    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
-  }
-
-  traverse(root);
-  return visited;
-}
-```
-
-```
-// parent node after child nodes (left, right)
-function postOrderDFS() {
-  let visited = [];
-  
-  function traverse(node) {
-    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
-    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
-    visited.push(node.val);
-  }
-
-  traverse(root);
-  return visited;
-}
-```
 #### Algorithms
+- **Find Min Node** (left-most node)
+```
+function findMinNode(node) {
+  if (node.left === null) {
+    return node;
+  } else {
+    return findMinNode(node.left);
+  }
+}
+```
+
+- **Contains Value**
+```
+function contains(val) {
+  let currentNode = this.root
+  let foundNode = false;
+  while(currentNode && !foundNode) {
+    if (currentNode.val === val) {
+      foundNode = true;
+      break;
+    } else if (val < currentNode.val) {
+      currentNode = currentNode.left;
+    } else {
+      currentNode = currentNode.right;
+    }
+  }
+  return foundNode;
+}
+```
+
 - **Height of Binary Tree**
 ```
 // recursive solution
@@ -961,6 +922,183 @@ const isBalanced = root => {
 };
 ```
 
+### <a id="breadth-first-search"></a>Breadth First Search
+#### Definition
+- An algorithm that searches a tree (or graph) by searching levels of the tree first, starting at the root.
+  - It finds every node on the same level, most often moving left to right. (visits nodes by row)
+  - While doing this it tracks the children nodes of the nodes on the current level.
+  - When finished examining a level it moves to the left most node on the next level.
+  - The bottom-right most node is evaluated last (the node that is deepest and is farthest right of it's level).
+
+#### What you need to know
+- Optimal for searching a tree that is wider than it is deep.
+- Uses a queue to store information about the tree while it traverses a tree.
+  - Because it uses a queue it is more memory intensive than **depth first search**.
+  - The queue uses more memory because it needs to stores pointers
+
+#### Time Complexity
+- Search: Breadth First Search: O(V + E)
+  - E is number of edges
+  - V is number of vertices
+
+#### Algorithm
+```
+function breadthFirstSearch(root) {
+  let queue = []; // to keep track of children in rows. Queue follows FIFO principle.
+  let result = [];
+  let node;
+  queue.push(root);  // start the queue
+  while(queue.length) {
+    node = queue.shift(); // dequeue - remove first item in queue
+    result.push(node);  // put the first item in queue into results array
+    if(node.left) queue.push(node.left);
+    if(node.right) queue.push(node.right);
+  }
+  return result;
+}
+```
+
+### <a id="depth-first-search"></a>Depth First Search
+#### Definition
+- An algorithm that searches a tree (or graph) by searching depth of the tree first, starting at the root.
+  - It traverses left down a tree until it cannot go further.
+  - Once it reaches the end of a branch it traverses back up trying the right child of nodes on that branch, and if possible left from the right children.
+  - When finished examining a branch it moves to the node right of the root then tries to go left on all it's children until it reaches the bottom.
+  - The right most node is evaluated last (the node that is right of all it's ancestors).
+
+#### What you need to know
+- Optimal for searching a tree that is deeper than it is wide.
+- Uses a stack to push nodes onto.
+  - Because a stack is LIFO it does not need to keep track of the nodes pointers and is therefore less memory intensive than breadth first search.
+  - Once it cannot go further left it begins evaluating the stack.
+
+#### Time Complexity
+- Search: Depth First Search: O(|E| + |V|)
+  - E is number of edges
+  - V is number of vertices
+
+#### Algorithm
+- starts at root to end of branch before backtracking
+1. **In-Order** - left, root, right
+2. **Pre-Order** - root, left, right
+3. **Post-Order** - left, right, root
+
+```
+function inOrderDFS() {
+  let visited = [];
+
+  function traverse(node) {
+    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
+    visited.push(node.val);
+    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
+  }
+
+  traverse(root);
+  return visited;
+}
+```
+
+```
+// parent node before child nodes (left, right)
+function preOrderDFS() {
+  let visited = [];
+  
+  function traverse(node) {
+    visited.push(node.val);
+    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
+    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
+  }
+
+  traverse(root);
+  return visited;
+}
+```
+
+```
+// parent node after child nodes (left, right)
+function postOrderDFS() {
+  let visited = [];
+  
+  function traverse(node) {
+    if(node.left) traverse(node.left);    // if node has left, use recursion to find left-most leaf node
+    if(node.right) traverse(node.right);     // if node has right, use recursion to find right-most leaf node
+    visited.push(node.val);
+  }
+
+  traverse(root);
+  return visited;
+}
+```
+
+### Breadth First Search Vs. Depth First Search
+- The simple answer to this question is that it depends on the size and shape of the tree.
+  - For wide, shallow trees use Breadth First Search
+  - For deep, narrow trees use Depth First Search
+  - Because BFS uses queues to store information about the nodes and its children, it could use more memory than is available on your computer. (But you probably won't have to worry about this.)
+  - If using a DFS on a tree that is very deep you might go unnecessarily deep in the search. See [xkcd](http://xkcd.com/761/) for more information.
+  - Breadth First Search tends to be a looping algorithm.
+  - Depth First Search tends to be a recursive algorithm.
+
+
+### <a id="binary-heap"></a> Binary Heaps (Min Heaps and Max Heaps)
+#### Definition
+- heap is a category of trees
+- completely binary tree filled from left to right (not necessarily all right have 2 child nodes yet)
+- no relationship for siblings
+- **Min Heap** - each parent node < children -> root = min element
+- **Max Heap** - each parent node > children -> root = max element
+- **Represent Binary Heap as array**
+  - n = index
+  - left child = 2n + 1
+  - right child = 2n + 2
+  - parent = Math.floor((n-1)/2)
+
+#### Time Complexity
+- Search:    Binary Search Tree: `O(log n)`
+- Insertion: Binary Search Tree: `O(log n)`
+  - start by adding node to right-most node (or end of the array) and then swap (bubble up) to swap with parents to its place
+- if you double the nodes, you increase 1 extra step
+- worst case scenario is if the binary tree is not balanced (like SLL) -> 0(n) for search
+
+### <a id="tries"></a>Trie(Prefix Trees)
+#### Definition
+- variant of n-any tree
+- stores characters at each node
+- each path represents a word
+- Terminating Trie Node means word is complete
+
+#### Time Complexity
+- same run time as hash table 0(k) or O(1)
+  - k = character length
+
+
+### <a id="graphs"></a>Graphs
+#### Definition
+- collection of nodes with edges (bridges) that connect them
+- **directed** (1-way) vs **undirected** (2-way)
+- **Connected graph**: graph between all vertices
+- **Acyclic graph**: graph without cycles
+
+#### Graph Search
+  - **Breadth-First Search**: start at root adn go to all neighbors of root before going to their neighbors
+    - use queue and store visited
+    - better for finding shortest path between nodes
+  - **Depth-First Search**: start at root and explore each branch completely before moving onto next branch
+    - preferred if we want to visit every node
+    - recursive
+  - when implementing graph search, check if each node has been visited because graphs have multiple ways to get to the ame place whereas trees only have one way
+
+#### Uses
+- Facebook friends
+
+#### Class
+
+#### Algorithms
+- **Bidirectional Search**: find shortest path between source and destination nodes
+```
+run 2 simultaneous breadth-first searches, 1 from each node -> when their searches collide -> found path
+```
+
 # <a id="algorithms"></a> Algorithms
 ## <a id="algorithm-basics"></a> Algorithm Basics
 ### Techniques
@@ -1037,55 +1175,6 @@ greedy algorithm (array)
 This algorithm never needed to compare all the differences to one another, saving it an entire iteration.
 
 ## <a id="search-algorithms"></a>Search Algorithms
-### <a id="breadth-first-search"></a>Breadth First Search
-#### Definition
-- An algorithm that searches a tree (or graph) by searching levels of the tree first, starting at the root.
-  - It finds every node on the same level, most often moving left to right.
-  - While doing this it tracks the children nodes of the nodes on the current level.
-  - When finished examining a level it moves to the left most node on the next level.
-  - The bottom-right most node is evaluated last (the node that is deepest and is farthest right of it's level).
-
-#### What you need to know
-- Optimal for searching a tree that is wider than it is deep.
-- Uses a queue to store information about the tree while it traverses a tree.
-  - Because it uses a queue it is more memory intensive than **depth first search**.
-  - The queue uses more memory because it needs to stores pointers
-
-#### Time Complexity
-- Search: Breadth First Search: O(V + E)
-- E is number of edges
-- V is number of vertices
-
-### <a id="depth-first-search"></a>Depth First Search
-#### Definition
-- An algorithm that searches a tree (or graph) by searching depth of the tree first, starting at the root.
-  - It traverses left down a tree until it cannot go further.
-  - Once it reaches the end of a branch it traverses back up trying the right child of nodes on that branch, and if possible left from the right children.
-  - When finished examining a branch it moves to the node right of the root then tries to go left on all it's children until it reaches the bottom.
-  - The right most node is evaluated last (the node that is right of all it's ancestors).
-
-#### What you need to know
-- Optimal for searching a tree that is deeper than it is wide.
-- Uses a stack to push nodes onto.
-  - Because a stack is LIFO it does not need to keep track of the nodes pointers and is therefore less memory intensive than breadth first search.
-  - Once it cannot go further left it begins evaluating the stack.
-
-#### Time Complexity
-- Search: Depth First Search: O(|E| + |V|)
-- E is number of edges
-- V is number of vertices
-
-
-#### Breadth First Search Vs. Depth First Search
-- The simple answer to this question is that it depends on the size and shape of the tree.
-  - For wide, shallow trees use Breadth First Search
-  - For deep, narrow trees use Depth First Search
-
-#### Nuances
-  - Because BFS uses queues to store information about the nodes and its children, it could use more memory than is available on your computer. (But you probably won't have to worry about this.)
-  - If using a DFS on a tree that is very deep you might go unnecessarily deep in the search. See [xkcd](http://xkcd.com/761/) for more information.
-  - Breadth First Search tends to be a looping algorithm.
-  - Depth First Search tends to be a recursive algorithm.
 
 
 ## <a id="sorting-algorithms"></a>Sorting Algorithms
@@ -1201,4 +1290,71 @@ This algorithm never needed to compare all the differences to one another, savin
 [Khan Academy's Algorithm Course](https://www.khanacademy.org/computing/computer-science/algorithms)
 
 ### <a id="system-design"></a>System Design and Scalability
-#### Definition
+#### Ex: Twitter
+1. Ask interviewer questions
+- Ask about your assumptions
+- Estimate when necessary
+2. Scope the problem
+- "Twitter has many different features. Is there a particular area you want me to focus on?"
+- Ex: Design Tiny Urls
+  1. Url is picked by user or is it auto-generated
+  2. Lasts forever or times out
+  3. What would it be used for
+3.  Draw user interface and discuss core features
+- clarify features
+- identify 2 core features by drawing and let interviewer correct you aot this time
+- Ex: draw user feed, who to follow, trending categories
+  - Tweeting
+    - What does a tweet look like in database?
+    - How to make #topic and @mention systems
+    - How to re-implement retweets
+  - Feed
+    - How to interesting tweets at top of feed
+    - User in database
+4.  Possible implementation
+- focus on data model (Ex: how to store tweets or users or follows in db)
+- I would use web framework taht can easily render list of tweets and easily show on mobile-friendly device
+  - Ex: React Native for all 3 (web, android, ios)
+5. Identify and Address Difficulties and Trade-offs
+  - this shows your eexperience buliding software that you can predict difficulties before starting
+6. Scaling, Performance, Trade-offs
+  - slow operations should ideally be done asyncronously to avoid making user wait long time
+  - **Caching** - going from server to database is very expensive. Must get data first time but you can cache t in memory store like Redis.
+    - simple key-value pairing and sits btw app and db
+    - when app requests info, it 
+      1) tries cache first 
+      2) if cache doesn't contain that key -> go to db to look
+    - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
+    - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
+  - **Load Balancer**: balances/distribbutes load to different servers so 1 server isn't overloaded and crash
+    - frontend can also be thrown behind load balancer 
+  - Ex: Some urls infrequently accessed and others can peak (popular form in Reddit) -> don't want it to constantly hit db so use a memory store
+  - Types of scaling
+    1. **Vertical scaling** - inc resources to specific node
+      - Ex: add additional memory to server to handle more load changes
+      - usually easier than horizontal scaling but more limited b/c u can onlyl add so much memory or disk space
+    2. **Horizontal scaling** - inc # of nodes
+      - add additional servers -> dec load on any one server
+- **MapReduce**
+  - used to process large amounts of data
+  - can do processing in parallel
+  1. Map - input data, output key, value pair
+  2. Reduce - reduces values for each key -> outputs new key and value
+7. Iterate on solutions
+
+
+
+
+
+### <a id="language-frameworks"></a>Language Frameworks
+#### Javascript
+Eventing system
+```
+class Events {
+  on(eventName, callback) {...}
+  trigger(eventName) {...}
+  off (eventName) {...}
+}
+// events: onClick, onHover, onExit
+// can add functions to happen on eventName
+```
