@@ -71,7 +71,7 @@ Big-Theta refers to the tight bound of time or space complexity of an algorithm.
 small values of `n`
 
 # <a id="data-structures"></a>Data Structures
-### <a id=="string"></a> String
+### <a id="string"></a>String
 
 #### Algorithms
 - [**Reverse String**](https://leetcode.com/problems/reverse-string/)
