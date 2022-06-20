@@ -1364,7 +1364,23 @@ This algorithm never needed to compare all the differences to one another, savin
   - Ex: React Native for all 3 (web, android, ios)
   - Database sql vs no sql
     - **SQL** SQL databases are valuable in handling structured data, or data that has relationships between its variables and entities. Because SQL works with such a strictly predefined schema, it requires organizing and structuring data before starting with the SQL database.
+      -  SQL database has a high level of reliability (ACID):
+        - Atomicity: All transactions must succeed or fail completely and cannot be left partially complete, even in the case of system failure.
+        - Consistency: The database must follow rules that validate and prevent corruption at every step.
+        - Isolation: Concurrent transactions cannot affect each other.
+        - Durability: Transactions are final, and even system failure cannot “roll back” a complete transaction.
     - **NoSQL** is a non-relational database, meaning it allows different structures than a SQL database (not rows and columns) and more flexibility to use a format that best fits the data. 
+      -  different data structures within a database. Because they allow a dynamic schema for unstructured data, there’s less need to pre-plan and pre-organize data, and it’s easier to make modifications. NoSQL databases allow you to add new attributes and fields, as well as use varied syntax across databases.
+      - NoSQL databases scale better horizontally, which means one can add additional servers or nodes as needed to increase load.
+      - CAP theorm
+        - Consistency: Every request receives either the most recent result or an error. MongoDB is an example of a strongly consistent system, whereas others such as Cassandra offer eventual consistency.
+        - Availability: Every request has a non-error result.
+        - Partition tolerance: Any delays or losses between nodes do not interrupt the system operation.
+      - not tables and rows
+        -  Column-oriented, where data is stored in cells grouped in a virtually unlimited number of columns rather than rows.
+        - Key-value stores, which use an associative array (also known as a dictionary or map) as their data model. This model represents data as a collection of key-value pairs.
+        - Document stores, which use documents to hold and encode data in standard formats, including XML, YAML, JSON (JavaScript Object Notation) and BSON. A benefit is that documents within a single database can have different data types.
+        - Graph databases, which represent data on a graph that shows how different sets of data relate to each other. Neo4j, RedisGraph (a graph module built into Redis) and OrientDB are examples of graph databases.
 5. Identify and Address Difficulties and Trade-offs with Scaling and Performance
   - this shows your experience buliding software that you can predict difficulties before starting
   - slow operations should ideally be done asyncronously to avoid making user wait long time
