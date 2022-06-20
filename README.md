@@ -1338,8 +1338,8 @@ This algorithm never needed to compare all the differences to one another, savin
 ### <a id="system-design"></a>System Design and Scalability
 #### Ex: Twitter
 1. Ask interviewer questions
-- Ask about your assumptions
-- Estimate when necessary
+  - Ask about your assumptions
+  - Estimate when necessary
 2. Scope the problem
 - "Twitter has many different features. Is there a particular area you want me to focus on?"
 - Ex: Design Tiny Urls
@@ -1358,20 +1358,78 @@ This algorithm never needed to compare all the differences to one another, savin
     - How to interesting tweets at top of feed
     - User in database
 4.  Possible implementation
-- focus on data model (Ex: how to store tweets or users or follows in db)
-- I would use web framework taht can easily render list of tweets and easily show on mobile-friendly device
+  - can start with API design and then draw out components with props
+  - focus on data model (Ex: how to store tweets or users or follows in db)
+  - I would use web framework taht can easily render list of tweets and easily show on mobile-friendly device
   - Ex: React Native for all 3 (web, android, ios)
-5. Identify and Address Difficulties and Trade-offs
-  - this shows your eexperience buliding software that you can predict difficulties before starting
-6. Scaling, Performance, Trade-offs
+  - Database sql vs no sql
+    - **SQL** SQL databases are valuable in handling structured data, or data that has relationships between its variables and entities. Because SQL works with such a strictly predefined schema, it requires organizing and structuring data before starting with the SQL database.
+    - **NoSQL** is a non-relational database, meaning it allows different structures than a SQL database (not rows and columns) and more flexibility to use a format that best fits the data. 
+5. Identify and Address Difficulties and Trade-offs with Scaling and Performance
+  - this shows your experience buliding software that you can predict difficulties before starting
   - slow operations should ideally be done asyncronously to avoid making user wait long time
-  - **Caching** - going from server to database is very expensive. Must get data first time but you can cache t in memory store like Redis.
-    - simple key-value pairing and sits btw app and db
-    - when app requests info, it 
-      1) tries cache first 
-      2) if cache doesn't contain that key -> go to db to look
-    - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
-    - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
+  - How to handle lots of data
+    - **List virtualization**
+      - So many elements in the DOM can cause two problems: slow initial rendering and laggy scrolling
+      - render to the DOM only what is visible to the user and unload them when they are not by replacing them with new ones
+      - Then, when scrolling, the remaining list items render while replacing the items that exit the viewport
+      - Libraries: `react-window` and `react-virtualized`
+    - **Pagination**
+      - split our large dataset into chunks ( or pages ) that we can gradually fetch and display to the user, thus reducing the load on the database
+      - **Pagination** works best on websites where users are looking for specific pieces of content, not just browsing content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting. 
+      - Pro:
+        - can save your spot and go back to it
+      - Con:
+        - extra action to click
+      - Types
+        1. **Offset Pagination**
+          - `limit` - Number of rows to fetch from the database
+          - `offset` - Number of rows to skip. Offset is like a page number, but with a bit of math around it (offset = (page-1) * limit)
+          -offset in databases is implemented in a way that loops through rows to know how many should be skipped. That means that the higher our offset is, the longer our database query will take.
+        2. **Cursor Pagination**
+          - `limit` - Same as before, amount of rows we want to show on one page
+          - `cursor` - ID of a reference element in the list. This can be the first item if you're querying the previous page and the last item if querying the next page
+          - `cursorDirection` - If user clicked Next or Previous (after or before)
+          - solve all issues that offset pagination has — performance, missing data and data duplication
+          - Queries that use a `cursor` instead of `offset` are more performant because the WHERE query helps skip unwanted rows, while OFFSET needs to iterate over them, resulting in a full-table scan. Skipping rows using WHERE can get even faster if you set up proper indexes on your IDs. The index is created by default in case of your primary key.
+    - **Infinite scrolling**: web-design technique that loads content continuously as the user scrolls down the page, eliminating the need for pagination
+      - good for browsing lists and feeds or discovery, without extra clicks/taps
+      - not good if you have a call to action at bottom. Endless scrolling is not recommended for goal-oriented finding tasks.
+      - API implemented similar to pagination
+      - **Pagination** works best on websites where users are looking for specific pieces of content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting. 
+      - Cons
+        - can’t bookmark their location and come back to it later like pagination
+        - lack of footer
+        - irrelevant scrollbar
+    - **Content Delivery Network (CDN)** - CDN servers may be geographically closer to user, so responses may come back faster
+    - **Caching** - going from server to database is very expensive. Must get data first time but you can cache in memory store like Redis to reduce hitting the database 
+        - simple key-value pairing and sits btw app and db
+        - when app requests info, it 
+          1) tries cache first 
+          2) if cache doesn't contain that key -> go to db to look
+        - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
+        - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
+  - improve user experience (React)
+    - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
+      - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
+    - **lazy loading images** we can wait until each of the images is about to appear in the viewport before we render them in the DOM
+      - Similar to the concept of windowing mentioned above, lazy loading images prevents the creation of unnecessary DOM nodes, boosting the performance of our React application.
+    - **useCallback** hook to remember function
+    - **useMemo** hook to remember calculation based on same input and output
+    - **code-splitting** 
+      - By default, when a React application renders in a browser, a “bundle” file containing the entire application code loads and serves to users at once. This file generates by merging all the code files needed to make a web application work.
+      - bundling is useful because it reduces the number of HTTP requests a page can handle. However, as an application grows, the file sizes increase, thus increasing the bundle file. At a certain point, this continuous file increase slows the initial page load, reducing the user’s satisfaction.
+      - React allows us to split a large bundle file into multiple chunks using dynamic import() followed by lazy loading these chunks on-demand using the React.lazy
+      ```
+        // before
+        import Home from "./components/Home";
+        import About from "./components/About";
+        
+        // after
+        const Home = React.lazy(() => import("./components/Home"));
+        const About = React.lazy(() => import("./components/About"));
+      ```
+ 
   - **Load Balancer**: balances/distribbutes load to different servers so 1 server isn't overloaded and crash
     - frontend can also be thrown behind load balancer 
   - Ex: Some urls infrequently accessed and others can peak (popular form in Reddit) -> don't want it to constantly hit db so use a memory store
