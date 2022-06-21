@@ -1891,7 +1891,7 @@ class Events {
       - When a function is called using the .call(param) .bind(param) or .apply(param) method, the frst param become the object that the this keyword refers to.
     ```
     var name = "Fatema";
-    
+
     function fun(){
       // some code here
       console.log(this.name);
@@ -1912,13 +1912,44 @@ class Events {
   - Important Note:
     - In the browser, global is the window object.
     - In Node.js, global is the global object
+- Write a `sum` method which will work properly when invoked using either syntax below.
+  ```
+  console.log(sum(2,3));   // Outputs 5
+  console.log(sum(2)(3));  // Outputs 5
+  ```
+  2 Solutions:
+  ```
+  Method 1: 
+  function sum(x) {
+    if (arguments.length == 2) {
+      return arguments[0] + arguments[1];
+    } else {
+      return function(y) { return x + y; };
+    }
+  }
+
+  Method 2: 
+  function sum(x, y) {
+    if (y !== undefined) {
+      return x + y;
+    } else {
+      return function(y) { return x + y; };
+    }
+  }
+  ```
 
 ### String Methods
 - substring
 - substr()
+- .concat()
+- .charAt()
+- .indexOf()
+- .startsWith()
+- .endsWith()
+- .split()
+- .slice()
 
 ### Array Methods
-- .forEach()
 - .pop()
 - .push()
 - .shift()
@@ -1926,6 +1957,42 @@ class Events {
 - .indexOf()
 - .splice() - remove item by index position
 - .slice() - can make shallow copy
+.filter()
+.map()
+.find()
+.every()
+.some()
+.sort()
+.reduce()
+.forEach()
+
+### Number Methods
+- .toFixed()
+- .toPrecision()
+- .toString()
+
+### Math Methods
+```
+Math.pow(2, 3) // 8
+Math.sqrt(16) // 4
+Math.min(7, 8, 6) // 6
+Math.max(7, 8, 6) // 8
+Math.floor(123.45) // 123
+Math.ceil(123.45) // 124
+Math.round(123.45) // 123
+Math.random() // 0.45..
+```
+
+### Date Methods
+```
+const d = new Date('9/17/1988');
+d.getDay()
+d.getFullYear()
+d.getMonth()
+Date.now()
+Milliseconds since Jan 1, 1970
+```
+
 
 # <a id="web"></a>Web
 - When user types in URL into browser:
