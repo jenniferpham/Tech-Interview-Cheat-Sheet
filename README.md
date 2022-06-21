@@ -18,6 +18,12 @@
   - [Graph](#graph)
 - [Algorithms](#algorithms)
   - [Algorithm Basics](#algorithm-basics)
+  - [Techniques](#algorithm-techniques)
+    - [Divide and Conquer](#divide-conquer)
+    - [Sliding Window](#sliding-window)
+    - [Multiple Pointers](#multiple-pointers)
+  - [Math Algorithms](#math-algorithms)
+  - [Permutations vs Combinations](#permutation-combination)
   - [Searching](#searching)
     - [Linear Search](#linear-search)
     - [Binary Search](#binary-search)
@@ -27,24 +33,14 @@
     - [Merge Sort](#merge-sort)
     - [Quick Sort](#quick-sort)
 - [System Design and Scalability](#system-design)
+  - [Database](#database)
 - [Language/Frameworks](#language-frameworks)
+  - [Javascript](#javascript)
 - [Additional Resources](#additional-resources)
 
 
 # <a id="o-notation"></a>Big O Notation
 ### Definition:
-
-The following are the Asymptotic rates of growth from best to worst:
-- constant growth - ``O(1)`` Runtime is constant and does not grow with `n`
-- logarithmic growth – ``O(log n)`` Runtime grows logarithmically in proportion to `n`
-- linear growth – ``O(n)`` Runtime grows directly in proportion to `n`
-- superlinear growth – ``O(n log n)`` Runtime grows in proportion _and_ logarithmically to `n`
-- polynomial growth – `O(n^c)` Runtime grows quicker than previous all based on `n`
-- exponential growth – `O(c^n)` Runtime grows even faster than polynomial growth based on `n`
-- factorial growth – `O(n!)` Runtime grows the fastest and becomes quickly unusable for even
-small values of `n`
-
-[(source: Soumyadeep Debnath, _Analysis of Algorithms | Big-O analysis_)](https://www.geeksforgeeks.org/analysis-algorithms-big-o-analysis/)
 
 Visualized below; the x-axis representing input size and the y-axis representing complexity:
 
@@ -56,13 +52,11 @@ Visualized below; the x-axis representing input size and the y-axis representing
 Big-O refers to the upper bound of time or space complexity of an algorithm, meaning it worst case runtime scenario. An easy way to think of it is that runtime could be better than Big-O but it will never be worse.
 
 #### What you need to know
-- Big-O and Big-Theta are the most common and helpful notations
-- Big-O does _not_ mean Worst Case Scenario, Big-Theta does _not_ mean average case, and Big-Omega does _not_ mean Best Case Scenario. They only connote the algorithm's performance for a particular scenario, and all three can be used for any scenario.
 - Worst Case means given an unideal input, Average Case means given a typical input, Best case means a ideal input. Ex. Worst case means given an input the algorithm performs particularly bad, or best case an already sorted array for a sorting algorithm.
 - Best Case and Big Omega are generally not helpful since Best Cases are rare in the real world and lower bound might be very different than an upper bound.
 - Big-O isn't everything. On paper merge sort is faster than quick sort, but in practice quick sort is superior.
 
-#### Complexitiesrates of growth from best to worst:
+#### Rates of growth from best to worst:
 - constant growth - ``O(1)`` Runtime is constant and does not grow with `n`
 - logarithmic growth – ``O(log n)`` Runtime grows logarithmically in proportion to `n`
 - linear growth – ``O(n)`` Runtime grows directly in proportion to `n`
@@ -89,21 +83,22 @@ var reverseString = function(s) {
     // another way to do it is to loop through s array and swap and stop at middle index
     // O(n)
     // [0, 1, 2, 3]
-    const midIndex = Math.floor(s.length/2);
+    const midIndex = Math.floor((s.length - 1)/2);
     for (let i = 0; i < midIndex; i++) {
-        // swap far left and far right
-        [s[i], s[s.length - i - 1]] = [s[s.length - i - 1], s[i]]
+        // swap far left and far right using ES6 destructuring assignment
+        [s[i], s[s.length - 1 - i]] = [s[s.length - 1 - i], s[i]];  
     }
     return s;
 };
+
+// ES6 destructuring assignment example as a way to swap in place
+// [arr[0], arr[1]]  = [arr[1], arr[0]]
+// input: [1,2,3,4] -> output: [2,1,3,4] 
 ```
 - [**Valid Parentheses**](https://leetcode.com/problems/valid-parentheses/)
 Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
 
-An input string is valid if:
-
-Open brackets must be closed by the same type of brackets.
-Open brackets must be closed in the correct order.
+An input string is valid if: Open brackets must be closed by the same type of brackets. Open brackets must be closed in the correct order.
 ```
 var isOpenBracket = function(string) {
     return string === '{' || string === '(' || string === '['
@@ -421,22 +416,42 @@ var singleNumber = function(nums) {
 #### Definition
 - Stores data with **nodes** that point to other nodes.
   - A linked list _chains_ nodes together by pointing one node's reference towards another node.
+  Each element is called a node.
+The first node is called the head.
+The last node is called the tail.
+Nodes are sequential. Each node stores a reference (pointer) to one or more adjacent nodes:
+In a singly linked list, each node stores a reference to the next node.
+In a doubly linked list, each node stores references to both the next and the previous nodes. This enables traversing a list backwards.
+
+Stacks and queues are usually implemented using linked lists, and less often using arrays.
+Pros:
+Optimized for fast operations on both ends, which ensures constant time insertion and deletion.
+Flexible capacity. Doesn't require setting initial capacity, can be expanded indefinitely.
+Cons:
+Costly access and search.
+Linked list nodes don't occupy continuous memory locations, which makes iterating a linked list somewhat slower than iterating an array.
 
 #### What you need to know
 - Designed to optimize insertion and deletion, slow at indexing and searching.
 - excellent alternative to arrays when insertion and deletion at beginning are frequenely required (array insertion at beginning requires all indices after to re-index, which is inefficient) (Arrays contain built-in index whereas linked lists don't) 
 - Linked lists are the foundation of Stacks and Queues
 - **Single-linked list** vs **double-linked list**
-  - Nodes on single-linked list have `.val` and `.next`, while double-linked lists have that and `.prev` property
-  - DLL is better than SLL for finding nodes (done in half the time because you can start at the tail instead of head)
+  - Nodes on single-linked list have `.val` and `.next`, while double-linked lists have `.val`, `.next` and `.prev` property
+  - DLL is better than SLL for finding nodes (done in half the time because you can start at the tail instead of head). DLL allows for traversing a list backwards.
   - DLL takes up more memory considering extra pointer
 - **Circularly linked list** is simple linked list whose **tail**, the last node, references the **head**, the first node.
-- **Stack**, commonly implemented with linked lists but can be made from arrays too.
+- **Stack**, commonly implemented with linked lists (less often with an array).
   - Stacks are **last in, first out** (LIFO) data structures.
   - Made with a linked list by having the head be the only place for insertion and removal.
-- **Queues**, too can be implemented with a linked list or an array.
+- **Queues**, too can be implemented with a linked list (less often with array).
   - Queues are a **first in, first out** (FIFO) data structure.
   - Made with a doubly linked list that only removes from head and adds to tail.
+- Pros:
+  - Optimized for fast operations on both ends, which ensures constant time insertion and deletion.
+  - Flexible capacity. Doesn't require setting initial capacity, can be expanded indefinitely.
+- Cons:
+  - Costly access and search.
+  - Linked list nodes don't occupy continuous memory locations, which makes iterating a linked list somewhat slower than iterating an array.
 
 #### Time Complexity
 - Indexing:         Linked Lists: `O(n)`
@@ -1081,19 +1096,117 @@ function postOrderDFS() {
 - **Connected graph**: graph between all vertices
 - **Acyclic graph**: graph without cycles
 
-#### Graph Search
-  - **Breadth-First Search**: start at root adn go to all neighbors of root before going to their neighbors
-    - use queue and store visited
-    - better for finding shortest path between nodes
-  - **Depth-First Search**: start at root and explore each branch completely before moving onto next branch
-    - preferred if we want to visit every node
-    - recursive
-  - when implementing graph search, check if each node has been visited because graphs have multiple ways to get to the ame place whereas trees only have one way
-
 #### Uses
 - Facebook friends
 
 #### Class
+```
+class Graph {
+  constructor() {
+    this.adjacencyList = {};
+  }
+
+  addVertex(vertex) {
+    if(!this.adjacencyList[vertex]) {
+      this.adjacencyList[vertex] = [];
+    }
+  }
+
+  addEdge(vertex1, vertex2) {
+    this.adjacencyList[vertex1].push(vertex2);
+    this.adjacencyList[vertex2].push(vertex1);
+  }
+
+  removeVertex(vertex) {
+    // remove vertex adn all edges (remove instances of that vertex in other arrays)
+    // loop thorugh only props that have that key
+    while(this.adjacencyList[vertex].length) {
+      const adjVertex = this.adjacencyList[vertex].pop();
+      this.removeEdge(adjVertex, vertex)
+    }
+    delete this.adjacencyList[vertex];
+  }
+
+  removeEdge(vertex) {
+    // cut relationship so vertex1 arr doesn't contain vertex2 and vice versa
+    this.adjacencyList[vertex1] = this.adjacencyList[vertex1].filter((edge) => edge !== vertex2);  // remove vertex2 from vertex1 arr
+    this.adjacencyList[vertex2] = this.adjacencyList[vertex2].filter((edge) => edge !== vertex1); // remove vertex1 from vertex2 arr
+  }
+}
+```
+
+
+#### Graph Search
+  - when implementing graph search, check if each node has been visited because graphs have multiple ways to get to the same place whereas trees only have one way
+  - **Breadth-First Search**: start at root and go to all neighbors of root before going to their neighbors
+    - use queue and store visited
+    - better for finding shortest path between nodes
+
+```
+// method inside of graph class
+// remember: BBQ - breadth and queue
+breadthFirstSearch(startVertex) {
+  let queue = [startVertex];
+  let visited = {startVertex: true};
+  let orderedResults = [];
+  let currentVertex;
+  while (queue.length > 0) {
+    currentVertex = queue.shift();  // remove first item from queue
+    orderedResults.push(currentVertex); // add first item from queue into orderedResults
+    this.adjacencyList[currentVertex].forEach((neighbor) -> {
+      if(!visited[neighbor]) {
+        queue.push(neighbor);
+        visited[neighbor] = true;
+      } 
+    })
+    return orderedResults;
+  }
+}
+```
+  - **Depth-First Search**: start at root and explore each branch completely before moving onto next branch
+    - preferred if we want to visit every node
+    - recursive
+```
+depthFirstSearchIterative(startVertex) {
+  let stack = [startVertex];
+  let visited = {startVertex: true};
+  let results = [];
+  let currentVertex;
+  while (stack.length > 0) {
+    currentVertex = stack.pop();
+    results.push(currentVertex);
+    this.adjacencyList[currentVertex].forEach((neighbor) => {
+      if(!visited[neighbor]) {
+        visited[neighbor] = true;
+        stack.push(neighbor);
+      }
+    })
+  }
+  return results;
+}
+
+---
+
+depthFirstSearchRecursive(startVertex) {
+  let result = [];
+  let visited = {};
+  const adjacencyList = this.adjacencyList;  // for scope within inner function
+
+  function dfs(vertex) {
+    if(!vertex) return null;
+    visited[vertex] = true;
+    result.push(vertex);
+    adjacencyList[vertex].forEach((neighbor) => {
+      if(!visited[neighbor]){
+        return dfs(neighbor)
+      }
+    })
+  } 
+
+  dfs(startVertex);
+  return results;
+}
+```
 
 #### Algorithms
 - **Bidirectional Search**: find shortest path between source and destination nodes
@@ -1103,6 +1216,37 @@ run 2 simultaneous breadth-first searches, 1 from each node -> when their search
 
 # <a id="algorithms"></a> Algorithms
 ## <a id="algorithm-basics"></a> Algorithm Basics
+## <a id="math-algorithms"></a> Math Algorithms
+- **Reverse integer**
+```
+// x is an int
+function reverse(x) {
+  let result = 0;
+  while(x !== 0) {
+    result = (result * 10) + (x % 10);
+    x = x/10;
+  }
+  const integerBoundary = Math.pow(2, 31);
+  if ((result < (integerBoundary * -1)) || (result > integerBoundary)) {
+    return 0;
+  } else {
+    return result;
+  }
+}
+```
+
+### <a id="permutation-combination">Permutations vs Combinations</a>
+- **Permutations** are for lists (order matters)
+  - formula: `P = n! / (n-k)!`
+  - You have n items and want to find # ways that k items can be ordered.
+  - You have 52 cards and want to find # possible ways to have a 5 card hand.
+- **Combinations** are for groups (order doesn't matter)
+  - formula: `C = n! / (k! * (n-k)!)`
+  - Find all the ways to pick k people from n and divide by the k! variants.
+  - Ex: Picking team of 3 from a group of 10
+  - Ex: Choosing 3 desserts from menu of 10
+
+
 ## <a id="searching"></a> Searching
 ### <a id="linear-search">Linear Search</a>
 - loop through all items in array once to see if there is a match
@@ -1147,8 +1291,82 @@ function binarySearch(arr, elem) {
 }
 ```
 
-### Techniques
-- **Sliding window**
+### <a id="algorithm-techniques"></a>Techniques
+#### <a id="divide-conquer"></a> **Divide and Conquer**
+- good for when input is sorted
+- instead of looping from far left to far right, divide up the data set
+- Ex: binary search - time complexity is 0(log n), instead of 0(n) looping through entire data set from far left to far right
+```
+binarySearch([1,2,3,4,5,6], 11)
+
+function binarySearch(arr, elem) {
+  let leftIndex = 0; 
+  let rightIndex = arr.length - 1;
+  let middleIndex;
+  while (leftIndex <= rightIndex) {
+    middleIndex = Math.floor((leftIndex + rightIndex)/2)
+    if(elem < arr[middleIndex]) {
+      rightIndex = middleIndex - 1;
+    } else if (elem > arr[middleIndex]) {
+      leftIndex = middleIndex + 1;
+    } else {
+      return middle;
+    }
+    return -1 // error or can't find
+  }
+}
+```
+#### <a id="sliding-window"></a> **Sliding Window**
+- good for consecutive string or consecutive array elements
+```
+maxSubarraySum([2,6,9,2,1,8,5,6,3], 3)
+
+function maxSubarraySum(arr, num) {
+  let maxSum = 0;
+  let tempSum = 0;
+
+  // edge case: array must be greater than num
+  if(arr.length < num) {  
+    return null;
+  }
+
+  for (let i = 0; i < num; i++) {
+    maxSum += arr[i];  // 2 + 6 + 9 = 17;
+  }
+  tempSum = maxSum;
+  for (let i = num; i < arr.length; i++) {
+    tempSum = tempSum - arr[i - num] + arr[i];
+    maxSum = Math.max(maxSum, tempSum);
+  }
+  return maxSum;
+}
+```
+
+#### <a id="multiple-pointers"></a> **Multiple Pointers**
+- good for solving problems with sorted input and minimal space complexity
+- creating pointers or values that correspond to index or position and move towards beg, middle, end based on certain conditions
+```
+sumZero([-3, -2, -1, -, 1, 2, 3])  // [-3, 3]
+sumZero([-2, 0, 1, 3])  // undefined
+sumZero([1, 2, 3])  // undefined
+
+function sumZero(arr) {
+  let left = 0;
+  let right = arr.length - 1;
+  while (left < right) {
+    let sum = arr[left] + arr[right];
+    if(sum === 0) {
+      return [arr[left], arr[right]];
+    } else if (sum > 0) {
+      right--;
+    } else {
+      left++;
+    }
+  }
+  return undefined;
+}
+```
+
 ### Recursive Algorithms
 #### Definition
 - An algorithm that calls itself in its definition.
@@ -1224,6 +1442,35 @@ This algorithm never needed to compare all the differences to one another, savin
 
 
 ## <a id="sorting-algorithms"></a>Sorting Algorithms
+### Quadratic Sorting Algorithms
+| Sorting Type    | Best Time | Avg Time | Worst Time | Space |
+| --------------- | --------- | -------- | ---------- | ----- |
+| Bubble Sort     | 0(n)      | 0(n^2)   | 0(n^2)     | O(1)  |
+| Insertion Sort  | 0(n)      | 0(n^2)   | 0(n^2)     | O(1)  |
+| Selection Sort  | 0(n)      | 0(n^2)   | 0(n^2)     | O(1)  |
+
+- Bubble and Insertion sort perform well with nearly sorted data
+- all these 3 sorts have same avg and worst and best time and space complexity
+- all 3 of these are good for smaller sets of data
+
+#### <a id="bubble-sort"></a>Bubble Sort
+- sort and swap adjacent elements
+
+#### <a id="insertion-sort"></a>Insertion Sort
+
+#### <a id="selection-sort"></a>Selection Sort
+
+### Faster/Complex Sorting Algorithms
+| Sorting Type    | Best Time   | Avg Time    | Worst Time  | Space       |
+| --------------- | ----------- | ----------- | ----------- | ----------- |
+| MergeSort       | 0(n log n)  | 0(n log n)  |  0(n log n) | O(n)        |
+| QuickSort       | 0(n log n)  | 0(n log n)  |  0(n^2)     | O(log n)    |
+| RadixSort       | 0(nk)       | 0(nk)       |  0(nk)      | O(n + k)    |
+- k = # of digits
+
+- Bubble and Insertion sort perform well with nearly sorted data
+- all these 3 sorts have same avg and worst and best time and space complexity
+- all 3 of these are good for smaller sets of data
 
 ### <a id="selection-sort"></a>Selection Sort
 #### Definition
@@ -1235,6 +1482,7 @@ This algorithm never needed to compare all the differences to one another, savin
     - Once it has checked all items, it moves the known smallest to the cursor and advances the cursor to the right and starts over
   - As the algorithm processes the data set, it builds a fully sorted left side of the data until the entire data set is sorted
 - Changes the array in place.
+- linear scan and swap smallest element to front. scan again and second smallest element is swapped second to front.
 
 #### What you need to know
 - Inefficient for large data sets.
@@ -1316,11 +1564,39 @@ This algorithm never needed to compare all the differences to one another, savin
 
 #### Time Complexity
 - Worst Case: `O(n^2)`
-- Average Case: `O(n log n)`
-- Best Case: `O(n log n)`
+- Best + Avg Case: `O(n log n)`
 
 #### Space Complexity
 - Worst Case: `O(log n)`
+
+#### Algorithm
+```
+function quickSort(arr, left = 0, right = arr.length - 1) {
+  let index = partition (arr, left, right);
+  if (left < index - 1 { // sort left half
+    quickSort(arr, left, index - 1)
+  })
+  if(index < right) { // sort right half
+    quickSOrt(arr, index, right);
+  }
+}
+
+//helper function
+function partition(arr, left, right) {
+  const pivot = arr[(left + right)/2]; // picking middle as pivot
+  while (left <= right) {
+    while(arr[left] < pivot) left++; // find elem on left that should go to right
+    while(arr[right] > pivot) right++; // find elem on right that should go to left
+    // swap elements and move left/right pointers
+    if(left <= right) {
+        swap(arr, left, right);
+        left++;
+        right--;
+    }
+  }
+  return left;
+}
+```
 
 #### Visualization
 ![#](https://upload.wikimedia.org/wikipedia/commons/6/6a/Sorting_quicksort_anim.gif)
@@ -1336,6 +1612,10 @@ This algorithm never needed to compare all the differences to one another, savin
 [Khan Academy's Algorithm Course](https://www.khanacademy.org/computing/computer-science/algorithms)
 
 ### <a id="system-design"></a>System Design and Scalability
+- Consider:
+  - Read-heavy - try caching
+  - Write-heavy - queue up writes
+
 #### Ex: Twitter
 1. Ask interviewer questions
   - Ask about your assumptions
@@ -1362,14 +1642,23 @@ This algorithm never needed to compare all the differences to one another, savin
   - focus on data model (Ex: how to store tweets or users or follows in db)
   - I would use web framework taht can easily render list of tweets and easily show on mobile-friendly device
   - Ex: React Native for all 3 (web, android, ios)
-  - Database sql vs no sql
+  - **SQL Databases (Relational Database)(RDBMS) vs NoSQL Databases (Non-relational database)**
+    - SQL databases are table based databases whereas NoSQL databases can be document based, key-value pairs, graph databases.
+    - SQL databases are vertically scalable while NoSQL databases are horizontally scalable.
+    - SQL databases have a predefined schema whereas NoSQL databases use dynamic schema for unstructured data.
     - **SQL** SQL databases are valuable in handling structured data, or data that has relationships between its variables and entities. Because SQL works with such a strictly predefined schema, it requires organizing and structuring data before starting with the SQL database.
-      -  SQL database has a high level of reliability (ACID):
-        - Atomicity: All transactions must succeed or fail completely and cannot be left partially complete, even in the case of system failure.
-        - Consistency: The database must follow rules that validate and prevent corruption at every step.
-        - Isolation: Concurrent transactions cannot affect each other.
-        - Durability: Transactions are final, and even system failure cannot “roll back” a complete transaction.
+      - Relational databases like MySQL Database, Oracle, Ms SQL Server, Sybase, etc. use SQL 
+      - should be used when data validity is super important
+      - SQL database has a high level of reliability - **ACID Compliance**:
+        - **ACID (atomicity, consistency, isolation, durability)** is a set of properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps. 
+        - For example, a transfer of funds from one bank account to another, even involving multiple changes such as debiting one account and crediting another, is a single transaction.
+        - **Atomicity**: All transactions must succeed or fail completely and cannot be left partially complete, even in the case of system failure. If 1 part fails, it will roll back to previou state.
+        - **Consistency**: The database must follow rules that validate and prevent corruption at every step.
+        - **Isolation**: Concurrent transactions cannot affect each other.
+        - **Durability**: Transactions are final, and even system failure cannot “roll back” a complete transaction.
     - **NoSQL** is a non-relational database, meaning it allows different structures than a SQL database (not rows and columns) and more flexibility to use a format that best fits the data. 
+      - does not require a fixed schema, avoids joins, and is easy to scale
+      - use when it’s more important to have fast data than correct data and you need to scale based on changing requirements
       -  different data structures within a database. Because they allow a dynamic schema for unstructured data, there’s less need to pre-plan and pre-organize data, and it’s easier to make modifications. NoSQL databases allow you to add new attributes and fields, as well as use varied syntax across databases.
       - NoSQL databases scale better horizontally, which means one can add additional servers or nodes as needed to increase load.
       - CAP theorm
@@ -1387,12 +1676,12 @@ This algorithm never needed to compare all the differences to one another, savin
   - How to handle lots of data
     - **List virtualization**
       - So many elements in the DOM can cause two problems: slow initial rendering and laggy scrolling
-      - render to the DOM only what is visible to the user and unload them when they are not by replacing them with new ones
-      - Then, when scrolling, the remaining list items render while replacing the items that exit the viewport
+      - render to the DOM only what is visible to the user and unload them when they are not visible by replacing them with new ones
+      - when scrolling, the new list items render when they are in view and replace the old items that exit the viewport
       - Libraries: `react-window` and `react-virtualized`
     - **Pagination**
       - split our large dataset into chunks ( or pages ) that we can gradually fetch and display to the user, thus reducing the load on the database
-      - **Pagination** works best on websites where users are looking for specific pieces of content, not just browsing content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting. 
+      - **Pagination** works best on websites where users are looking for specific pieces of content, not just browsing content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting, not good for goal-oriented tasks
       - Pro:
         - can save your spot and go back to it
       - Con:
@@ -1425,6 +1714,20 @@ This algorithm never needed to compare all the differences to one another, savin
           2) if cache doesn't contain that key -> go to db to look
         - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
         - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
+  - **Idempotent**
+    - Stripe API implements idempotency keys on mutating endpoints (POST) by allowing clients to pass a unique value in with the special **Idempotency-Key** header, so if request fails due to a network connection error, you can safely retry it with the same idempotency key, and the customer is charged only once.
+    - In REST API, GET and PUT and DELETE w/ same data are idempotent, not POST b/c given same input, it gives back same output
+    - guarantees that it is safe to do over and over again
+    - When performing a request, a client generates a unique ID to identify that operation to the server along with the normal payload. The server receives the ID and correlates it with the state of the request on its end. If the client notices a failure, it retries the request with the same ID, and that ID guarantees that it's only done once.
+  - Save State
+    - save data on server side if possible
+      - 1 source of truth and consistent across all sessions and devices
+    - client side
+      - useContext React API
+      - local component state like loading or error state for fetching data
+      - Web storage
+        - local storage or session storage
+      - state management libraries: React Context API, Redux, Recoil
   - improve user experience (React)
     - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
       - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
@@ -1466,9 +1769,64 @@ This algorithm never needed to compare all the differences to one another, savin
 
 
 
-### <a id="language-frameworks"></a>Language Frameworks
-#### Javascript
-Eventing system
+# <a id="language-frameworks"></a>Language Frameworks
+## <a id="html">HTML</a>
+- put `<script>` tags in `<head>` tags with async/defer
+  - async - run scripts and render HTML without blocking
+  - defer - run scripts after the other
+  - before, `<script>` was put at end of `<body>` tag to not block rendering of HTML b/c we assumed scripts would modify the DOM
+
+## <a id="CSS">CSS</a>
+
+## <a id="javascript">Javascript</a>
+- null is an object, so checking typeof as an object is sometimes not enough
+```
+var bar = null;
+typeof bar === "object"; // true
+solution: (bar !== null) && typeof bar === "object"); // false
+```
+- arrays are objects
+- if you want false for nulls, arrays, fucntions but true for object:
+```
+var bar = [];
+Array.isArray(bar) OR (bar !== null) && (bar.constructor === "object")
+```
+- JS supports named and anonymous functions
+- `var` vs `let`
+  - **var**: function scope
+  - **let**: block scope, introduced in ES6 (Ex: for loop - use let)
+  ```
+  for (var i = 0; i < 5; i++) {
+    setTimeout(function() { console.log(i); }, i * 1000)
+  }
+  // Output: 5,5,5,5 
+  // because setTimeout function will be executed after entire for loop runs when i is already 5
+  Soln: use `let` (block scope)
+  ```
+- undefined vs null
+  - **undefined**: variable is declared but no value has been assigned
+  - **null**: value of null is explicitly set
+  - `typeof undefined;  // undefined`
+  - `typeof null;  // "object"`
+- **Promises**
+  - JavaScript promise object can be in one of three states: `pending`, `resolved`, or `rejected`. While the value is not yet available, the Promise stays in the `pending` state. Afterwards, it transitions to one of the two states: `resolved` or `rejected` . A resolved promise stands for a successful completion. Due to errors, the promise may go in the rejected state.
+```
+const promise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Result");
+  }, 200);
+});
+
+promise.then(
+  (res) => {
+    console.log(res);
+  },
+  (err) => {
+    alert(err);
+  }
+);
+```
+- Eventing system
 ```
 class Events {
   on(eventName, callback) {...}
@@ -1478,3 +1836,148 @@ class Events {
 // events: onClick, onHover, onExit
 // can add functions to happen on eventName
 ```
+- **Falsey values** include `false`, `0`, empty strings, `null`, `undefined`, and `NaN`. All other values are truthy.
+- **prototypical inheritance**: every object has prop called prototype that you can add methods to it and when you create another object from the newly created, it will automatically inherit its parent's property
+- **Closure**: inner function has access to outer function's variables and hold it's environments
+- Why do libraries wrap entire ocntent of JS source file in function block? jQuery and Node do this
+  - creates closure around entire contents of file
+  - creates private namespace -> avoids potential name classes between different JS modules and libraries
+- **use strict**: voluntary way to enforce stricter parsing and error handling on your JS code at runtime
+  - code errors that woudl ahve been ignored or fail silently will now generate errors or throw exceptions -> debugging easier
+  - prevent accidental globals
+    - w/o strict mode: assigning value to undeclared variable automatically creates global variable int aht name
+  - eliminates this coersion
+    - w/o strict mode: if `this` is null/undefined, then it goes up to using global `this`
+    - w/ strict mode: use `this` of null/undefined -> error
+  - disallow duplicate parameter  `Ex: function foo(val1, val1, val2)`
+- **Hoisting**: JS default behavior of moving declarations (but not initializations) to top of scope or function
+  ```
+  x = 5; //assign
+  console.log(x);
+  var x; // declare
+
+  SAME AS:
+  var x;
+  x = 5;
+  console.log(x)
+  ```
+  - initializations (assigning values) are not hoisted
+  ```
+  var x = 5;
+  console.log(x + " " + y); // "5 undefined"
+  var y = 7; // declaration var y is hoisted to the top but y=7 is not
+  ```
+  - best practice: declare all variables to top of scope
+    - use strict mode doesn't allow varaibles to be used if not decalred first
+- **NaN (Not a Number)**
+  - `typeof (NaN === "number") // true`
+  - is not equal to itself `NaN === NaN  // false`
+  - use: `Number.isNaN(3)`
+- **Event Loop**
+  - runs items on **call stack**(LIFO) first before `message queue`
+  - setTimeout goes to `message queue`
+  - **Event/Message/Callback Queue** (FIFO): contains events that gets triggered after onEvents (click, hover, mousemove) and setTimeout
+- **this**
+
+### String Methods
+- substring
+- substr()
+
+### Array Methods
+- .forEach()
+- .pop()
+- .push()
+- .shift()
+- .unshift()
+- .indexOf()
+- .splice() - remove item by index position
+- .slice() - can make shallow copy
+
+# <a id="web"></a>Web
+- When user types in URL into browser:
+1. Enter url into web browser
+2. DNS (domain name services) translates human-friendly domain name to computer friendly IP address (IP4 vs IP6)
+3. browser sends HTTP request to server
+4. server sends back HTTP response
+5. browser renders HTML
+6. brwoser sends request for additional objects embeded in HTML (images, CSS, JS)
+7. Once page is loaded, browser sends further async requests as needed
+
+## Storage
+- **Cookies**: small files on user's computer read by teh server-side (Remember: serve cookies)
+  - storage capacity 4kb
+  - accessed by either web server or client's computer
+  - basically key and value store (hash table)
+  - must be parsed to read
+  - use:
+    - carry info from 1 session on website to another session
+    - carry info between sessions on related websites
+    - if we stored this data on server without cookies, then user would have to login on each visit
+    - cookies can be made to persist for arbitrary amount of time
+- **LocalStorage**: stores data on client's computer (Remember: printing shop has local clients)
+  - save key/value pairs inw eb browser
+  - no expirationd ate
+   can only be accessed by JS and HTML5
+   - 5MB storage capacity (more than cookies 4kb)
+   - data not sent to server for every HTTP request -> dec traffic btw client and server
+
+
+## API
+- **RESTful services**
+  - implement CRUD using HTTP methods (GET, PUT, POST, DELETE)
+  - transfer XML or JSON or both
+  - stateless
+
+## Performance
+To reduce app load time
+  - bundle and minify all CSS and JS files
+  - **Content Delivery Network(CDN)** - redirects traffic to closest server, which caches content (web videos or bulky media) -> decrease latency of HTTP request if servers are geographically closer to the user and inc download speed
+  - **Cache** - reduce DB calls
+  - optimize images to less than screen resolution and save as compressed file
+  - 1 sprite image for all icon images of app and then use background-position to display it -> reduce HTTP requests
+  - test perforamnce with Lighthouse
+  - pre-load/pre-fetch data
+  - code-splitting
+  - service worker offline
+  - lazy load
+  - autopager
+  - infinite scroll
+  - SSR/initial data feed
+  - list virtualization - limit adding DOM elements to only what's viewable- 
+- Images
+  - compress images
+  - lazy load images
+  - progressive images - blurry to clear
+  - use SVG for icons
+  - CSS sprites -> reduce # of network requests
+  - caching through CDN
+
+
+## Security
+- **Cross-Origin Resource Sharing (CORS)** enables resources like JS, fonts, images on a webpage to be requested from an outside domain (recommended standard)
+  - `Same-Origin Policy` blocks web apps from making HTTP requests from different origins -> prevents attackers that plant scripts on various websites to make requests to sites with personal data (Ex: ads in Google ads)
+  - if server doesn't respond with specific cross-origin headers, browser will not allow JS to access the response
+  - uses **CORS headers** to give browser permission to let web app at 1 domain access resources from different domain
+- **Cross Site Scripting (XSS)** - security vulnerability where hackers try to inject HTML/Javascript ot steal confidential info from cookies and pass that info to themselves
+  - solution: sanitize inputs, escape, don't use eval, update libraries
+- **URL manipulation** - security vulnerability where hackers pass info in query string parameters and alter info to get authentication of servers and steal critical data
+
+
+## Testing
+- **Unit Testing**: validate taht each individual unit of software does what it is intended to do
+- **E2E Testing**: test flow of app from start-to-finish, usually from user perspective
+- test app in different browsers using tools like BrowserStack
+
+## Accessibility
+- alt text
+- color contrast
+- headers for structure
+- form inputs
+  - have labels
+  - can tab through inputs and keyboard accessible
+- allow enlarging fonts
+- audio/video/image description
+- readable urls
+- aria-roles
+- tables only for tabular data 
+
