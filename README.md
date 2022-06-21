@@ -1877,7 +1877,41 @@ class Events {
   - runs items on **call stack**(LIFO) first before `message queue`
   - setTimeout goes to `message queue`
   - **Event/Message/Callback Queue** (FIFO): contains events that gets triggered after onEvents (click, hover, mousemove) and setTimeout
+-
 - **this**
+  - The `this` keyword is used inside a function. The `this` keyword is merely a reference to another object. What the `this` keyword refers to depends on the way the function is implemented.
+    - Here are the 3 scenarios to remember:
+      1. Scenario #1: this inside a function
+      The this keyword points to global object.
+      2. Scenario #2: this inside a method
+      The this keyword points to the object the
+      method is in.
+      3. Scenario #3: When function is run with
+      call, bind or apply
+      - When a function is called using the .call(param) .bind(param) or .apply(param) method, the frst param become the object that the this keyword refers to.
+    ```
+    var name = "Fatema";
+    
+    function fun(){
+      // some code here
+      console.log(this.name);
+    }
+    const user = {
+      name: "Marium",
+      yearOfBirth: 1999,
+      calcAge: function(){
+        const currentYear = (new Date()).getFullYear();
+        return currentYear - this.yearOfBirth;
+      }
+    }
+
+    fun(); // 'this' is global. Logs "Fatema"
+    user.calcAge(); // 'this' is the user object
+    fun.call(user); // 'this' is the user object. Logs "Marium"
+    ```
+  - Important Note:
+    - In the browser, global is the window object.
+    - In Node.js, global is the global object
 
 ### String Methods
 - substring
