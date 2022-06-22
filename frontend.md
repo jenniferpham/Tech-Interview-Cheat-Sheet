@@ -4,6 +4,8 @@
 - [Web](#web)
   - [Storage](#storage)
   - [API](#api)
+    - [Rest API](#rest-api)
+    - [GraphQL](#graphql)
   - [Performance](#performance)
   - [Security](#security)
   - [Testing](#testing)
@@ -48,10 +50,30 @@
 
 
 ## <a id="api">API</a>
+### <a id="rest-api">REST API</a>
 - **RESTful services**
   - implement CRUD using HTTP methods (GET, PUT, POST, DELETE)
   - transfer XML or JSON or both
   - stateless
+### <a id="graphql">GraphQL</a>
+```
+// A query to fetch all the pets from the app might look like this:
+query GetAllPets {
+  pets {
+    name
+    petType
+  }
+}
+
+// a mutation that adds a new pet might look a little something like this:
+mutation AddNewPet ($name: String!, $petType: PetType) {
+  addPet(name: $name, petType: $petType) {
+    id
+    name
+    petType
+  }
+}
+```
 
 ## <a id="performance">Performance</a>
 To reduce app load time
@@ -370,7 +392,29 @@ Milliseconds since Jan 1, 1970
 ```
 
 ## <a id="react">React</a>
-- improve user experience (React)
+- fetch data
+```
+import React, { useEffect, useState } from "react";
+
+export default function App() {
+    const [quote, setQuote] = useState("") // useState structure
+
+useEffect(() => {
+  const fetchKanyeQuote = async () => {
+    try {
+      const res = await fetch("https://api.kanye.rest/");
+      const data = await res.json();
+
+      setQuote(data.quote); // setter function updates initialState value
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchKanyeQuote();
+}, []);
+```
+- improve user experience or performance (React)
     - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
         - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
     - **lazy loading images** we can wait until each of the images is about to appear in the viewport before we render them in the DOM
