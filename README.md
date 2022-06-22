@@ -5,7 +5,7 @@
 - [Data Structures](#data-structures)
   - [String](#string)
   - [Array](#array)
-  - [Hash Table or Hash Map](#hash)
+  - [Hash Table or Hash Map](#hash-map)
   - [Linked List](#linked-list)
   - [Stack](#stack)
   - [Queue](#queue)
@@ -34,8 +34,6 @@
     - [Quick Sort](#quick-sort)
 - [System Design and Scalability](#system-design)
   - [Database](#database)
-- [Language/Frameworks](#language-frameworks)
-  - [Javascript](#javascript)
 - [Additional Resources](#additional-resources)
 
 
@@ -391,7 +389,7 @@ var singleNumber = function(nums) {
 };
 ```
 
-### <a id="hash"></a> Hash Table or Hash Map
+### <a id="hash-map"></a> Hash Table or Hash Map
 #### Definition
 - Stores data with key value pairs.
 - **Hash functions** accept a key and return an output unique only to that specific key.
@@ -400,16 +398,70 @@ var singleNumber = function(nums) {
 
 #### What you need to know
 - Designed to optimize searching, insertion, and deletion.
-- **Hash collisions** are when a hash function returns the same output for two distinct inputs.
+- If hashing two or more keys returns the same value, this is called a **hash collision** (returns same output for 2 distinct inputs).
   - All hash functions have this problem.
-  - This is often accommodated for by having the hash tables be very large.
+  - This is often accommodated for by having the hash tables be very large.  
+  - To mitigate this, instead of storing actual values, the underlying array may hold references to linked lists that, in turn, contain all values with the same hash.
+- A **set** is a variation of a hash table that stores keys but not values.
 - Hashes are important for associative arrays and database indexing.
+- Average search, insertion and deletion are O(1). Fast!
+- Cons: No ordering means looking up minimum and maximum values is expensive. 0(n)
 
 #### Time Complexity
 - Indexing:         Hash Tables: `O(1)`
 - Search:           Hash Tables: `O(1)`
 - Insertion:        Hash Tables: `O(1)`
 
+#### Uses
+- cache
+- database partitioning
+
+#### Class
+```
+class Hashmap {
+  constructor() {
+    this._storage = [];
+  }
+
+  hashStr(str) {
+    let finalHash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const charCode = str.charCodeAt(i);
+      finalHash += charCode;
+    }
+    return finalHash;
+  }
+
+  set(key, val) {
+    let idx = this.hashStr(key);
+
+    if (!this._storage[idx]) {
+      this._storage[idx] = [];
+    }
+
+    this._storage[idx].push([key, val]);
+  }
+
+  get(key) {
+    let idx = this.hashStr(key);
+
+    if (!this._storage[idx]) {
+      return undefined;
+    }
+
+    for (let keyVal of this._storage[idx]) {
+      if (keyVal[0] === key) {
+        return keyVal[1];
+      }
+    }
+  }
+}
+
+var dict = new Hashmap();
+dict.set("james", "123-456-7890");
+dict.set("jess", "213-559-6840");
+console.log(dict.get("james"));
+```
 
 
 ### <a id="linked-list"></a> Linked List
@@ -641,10 +693,68 @@ WHen they collide, move SLowPointer to LinkedList head. Keep Fast pointer where 
 Move SLow pointer and fast pointer at 1 step/time -> return collision spot.
 ```
 
+### <a id="queue"></a> Queues (FIFO)
+#### What you need to know
+- fast insertion and deletion = 0(1)
+- searching and access = 0(n) -> if you need to search or access within the queue, use a different structure
+- don't really want to implement queue as an array because inserting and removing the first item requires re-indexing all items afterwards, which is 0(n) vs 0(1) with queue or linked list
+- To **enqueue**, insert at the tail of the linked list.
+- To **dequeue**, remove at the head of the linked list.
+#### Methods
+- .enqueue() - add item to end of line (get in line) (similar to array.unshift() add to beg)
+- .dequeue() - remove first in line (get out of line)(remove head) (similar to array.pop() remove from end)
+- .pop() - remove first item in queue
+- .push(item) - adds item to end of queue
+- .peek() - return first item
+- .isEmpty() - return true only if queue is empty
+#### Uses
+- background tests
+- print queue
+- uploading files
+
+#### Class
+```
+class Queue {
+  constructor() {
+    this.queue = [];
+  }
+
+  enqueue(item) {
+    return this.queue.unshift(item);
+  }
+
+  dequeue() {
+    return this.queue.pop();
+  }
+
+  peek() {
+    return this.queue[this.length - 1];
+  }
+
+  get length() {
+    return this.queue.length;
+  }
+
+  isEmpty() {
+    return this.queue.length === 0;
+  }
+}
+
+const queue = new Queue();
+queue.enqueue(1);
+queue.enqueue(2);
+console.log(queue);
+
+queue.dequeue();
+console.log(queue);
+```
+
+
 ### <a id="stack"></a> Stacks (LIFO)
 #### What you need to know
-- insertion and removal = 0(1)
+- fast insertion and removal = 0(1)
 - searching and access = 0(n) -> if you need to search or access within the stack, use a different structure
+- LIFO - last in first out - like stack of dishes
 - can push and pop with array in javascript
 - for pop() and push() in a linked list, you can add to the head so it is optimized for both SLL and DLL
 #### Methods
@@ -659,64 +769,54 @@ Move SLow pointer and fast pointer at 1 step/time -> return collision spot.
 - versioning
 #### Class
 ```
-class Queue {
+class Stack {
   constructor() {
-    this.first = null;
-    this.last = null;
-    this.size = 0;
+    this.stack = [];
+  }
+
+  push(item) {
+    return this.stack.push(item);
+  }
+
+  pop() {
+    return this.stack.pop();
+  }
+
+  peek() {
+    return this.stack[this.length - 1];
+  }
+
+  get length() {
+    return this.stack.length;
+  }
+
+  isEmpty() {
+    return this.length === 0;
   }
 }
 
-class Node {
-  constructor(val) {
-    this.val = null;
-    this.next = null;
-  }
-}
+const newStack = new Stack();
+newStack.push(1);
+newStack.push(2);
+console.log(newStack);
+
+newStack.pop();
+console.log(newStack);
 ```
 
-### <a id="queue"></a> Queues (FIFO)
-#### What you need to know
-- insertion and removal = 0(1)
-- searching and access = 0(n) -> if you need to search or access within the queue, use a different structure
-- don't really want to implement queue as an array because inserting and removing the first item requires re-indexing all items afterwards, which is 0(n) vs 0(1) with queue or linked list
-#### Methods
-- .enqueue() - add item to end of line (get in line) (similar to array.unshift() add to beg)
-- .dequeue() - remove first in line (get out of line)(remove head) (similar to array.pop() remove from end)
-- .pop() - remove first item in queue
-- .push(item) - adds item to end of queue
-- .peek() - return first item
-- .isEmpty() - return true only if queue is empty
-#### Uses
-- background tests
-- print queue
-- uploading files
-#### Class
-```
-class Queue {
-  constructor() {
-    this.first = null;
-    this.last = null;
-    this.size = 0;
-  }
-}
-
-class Node {
-  constructor(val) {
-    this.val = null;
-    this.next = null;
-  }
-}
-```
 
 ### <a id="tree"></a> Tree
 #### Definition
 - data structure that consists of nodes in parent/child relationship (if siblings are connected, then that's a **graph**)
-  - tree is a type of graph, but not the other way around
+  - tree is a type of graph, but not the other way around. Between any two nodes, there is only one possible path.
   lists-linear vs trees - nonlinear
-  - each tree has a root node
+- each tree has a root node
 - **Leaf node** - no children
 - **Edge** - connection btw 1 node to another
+- The number of links from the root to a node is called that node's **depth**.
+- The **height** of a tree is the number of links from its root to the furthest lleaf.
+- Pros:For most operations, the average time complexity is O(log(n)), which enables solid scalability. Worst time complexity varies between O(log(n)) and O(n).
+- Cons: Performance degrades as trees lose balance, and re-balancing requires effort. No constant time operations: trees are moderately fast at everything they do.
 
 #### What you need to know
 - Designed to optimize searching and sorting.
@@ -732,18 +832,49 @@ class Node {
 
 #### Class
 ```
-class TreeNode {
-  constructor(val) {
-    this.val = val;
+function TreeNode(value) {
+  this.value = value;
+  this.children = [];
+  this.parent = null;
+
+  this.setParentNode = function (node) {
+    this.parent = node;
+  };
+
+  this.getParentNode = function () {
+    return this.parent;
+  };
+
+  this.addNode = function (node) {
+    node.setParentNode(this);
+    this.children[this.children.length] = node;
+  };
+
+  this.getChildren = function () {
+    return this.children;
+  };
+
+  this.removeChildren = function () {
     this.children = [];
+  };
+}
+
+const root = new TreeNode(1);
+root.addNode(new TreeNode(2));
+root.addNode(new TreeNode(3));
+
+const children = root.getChildren();
+for (let i = 0; i < children.length; i++) {
+  for (let j = 0; j < 5; j++) {
+    children[i].addNode(new TreeNode("second level child " + j));
   }
 }
 
-class Tree {
-  constructor(val) {
-    this.root = null;
-  }
-}
+console.log(root);
+children[0].removeChildren();
+console.log(root);
+console.log(root.getParentNode());
+console.log(children[1].getParentNode());
 ```
 
 ### <a id="binary-tree"></a> Binary Search Tree
@@ -754,28 +885,124 @@ class Tree {
   - All left descendants < parent node
   - all right descendants > parent node
   - Clarify with interviewer
-    - are there duplicate values?
+    - are there duplicate values? usually not allowed
     - if there are child nodes with same value as parent node, does it belong on left or right side?
 - **Balanced Tree**: balanced enough to ensure 0(log n) times for insertion and search/find
 - **Complete binary tree**: tree in which every level is filled from left to right (except lowest level) but must fill left before right
 - **Full binary tree**: every node has 0 or 2 children
 - **Perfect binary tree**: both full and complete, each level has max # of nodes (exactly (2^k - 1) nodes)
+- In an **unbalanced binary tree**, there is a significant difference in height between subtrees.
+- An completely one-sided tree is called a **degenerate tree** and becomes equivalent to a linked list.
 
 #### Time Complexity
-- Search:    Binary Search Tree: `O(log n)`
-- Insertion: Binary Search Tree: `O(log n)`
+- Search:    Binary Search Tree: `O(log n)` on average, but `O(n)` for unbalanced trees like SLL
+- Insertion: Binary Search Tree: `O(log n)`, but `O(n)` for unbalanced trees like SLL
 - if you double the nodes, you increase 1 extra step
-- worst case scenario is if the binary tree is not balanced (like SLL) -> 0(n) for search
 
 #### Class
 ```
-class BinaryTreeNode {
+function Node(val) {
+  this.val = val;
+  this.left = null;
+  this.right = null;
+}
+
+class BST {
   constructor(val) {
-    this.val = val;
-    this.left = null;
-    this.right = null;
+    this.root = new Node(val);
+  }
+
+  add(val) {
+    let newNode = new Node(val);
+
+    function findPosAndInsert(currNode, newNode) {
+      if (newNode.val < currNode.val) {
+        if (!currNode.left) {
+          currNode.left = newNode;
+        } else {
+          findPosAndInsert(currNode.left, newNode);
+        }
+      } else {
+        if (!currNode.right) {
+          currNode.right = newNode;
+        } else {
+          findPosAndInsert(currNode.right, newNode);
+        }
+      }
+    }
+
+    if (!this.root) {
+      this.root = newNode;
+    } else {
+      findPosAndInsert(this.root, newNode);
+    }
+  }
+
+  remove(val) {
+    let self = this;
+    let removeNode = function (node, val) {
+      if (!node) {
+        return null;
+      }
+      if (val === node.val) {
+        if (!node.left && !node.right) {
+          return null;
+        }
+        if (!node.left) {
+          return node.right;
+        }
+        if (!node.right) {
+          return node.left;
+        }
+        let temp = self.getMinimum(node.right);
+        node.val = temp;
+        node.right = removeNode(node.right, temp);
+        return node;
+      } else if (val < node.val) {
+        node.left = removeNode(node.left, val);
+        return node;
+      } else {
+        node.right = removeNode(node.right, val);
+        return node;
+      }
+    };
+    this.root = removeNode(this.root, val);
+  }
+
+  getMinimum(node) {
+    if (!node) {
+      node = this.root;
+    }
+    while (node.left) {
+      node = node.left;
+    }
+    return node.val;
+  }
+
+  // helper method
+  contains(value) {
+    let doesContain = false;
+
+    function traverse(bst) {
+      if (this.root.value === value) {
+        doesContain = true;
+      } else if (this.root.left !== undefined && value < this.root.value) {
+        traverse(this.root.left);
+      } else if (this.root.right !== undefined && value > this.root.value) {
+        traverse(this.root.right);
+      }
+    }
+
+    traverse(this);
+    return doesContain;
   }
 }
+
+const bst = new BST(4);
+bst.add(3);
+bst.add(5);
+bst.remove(3);
+console.log(bst);
 ```
 
 
@@ -1091,13 +1318,22 @@ function postOrderDFS() {
 
 ### <a id="graphs"></a>Graphs
 #### Definition
-- collection of nodes with edges (bridges) that connect them
-- **directed** (1-way) vs **undirected** (2-way)
+- Each graph element is called a **node**, or **vertex**.
+- Graph nodes are connected by **edges** (bridges that connect them)
+- can be **directed** (1-way) or **undirected** (2-ways).
+- can be **cyclic** or **acyclic**. A **cyclic graph** contains a path from at least one node back to itself. **Acyclic graph** is a graph without cycles.
+- can be weighted or unweighted. In a weighted graph, each edge has a certain numerical weight.
+- can be traversed (see Trees)
 - **Connected graph**: graph between all vertices
-- **Acyclic graph**: graph without cycles
+- Data structures used to represent graphs:
+  - **Edge list**: a list of all graph edges represented by pairs of nodes that these edges connect.
+  - **Adjacency list**: a list or hash table where a key represents a node and its value represents the list of this node's neighbors.
+  - **Adjacency matrix**: a matrix of binary values indicating whether any two nodes are connected.
 
 #### Uses
 - Facebook friends
+- Recommendations in ecommerce websites.
+- Mapping services
 
 #### Class
 ```
@@ -1608,8 +1844,6 @@ function partition(arr, left, right) {
 - Merge Sort divides the set into the smallest possible groups immediately then reconstructs the incrementally as it sorts the groupings.
 - Quicksort continually partitions the data set by a pivot, until the set is recursively sorted.
 
-## <a id="additional-resources"></a>Additional Resources
-[Khan Academy's Algorithm Course](https://www.khanacademy.org/computing/computer-science/algorithms)
 
 ### <a id="system-design"></a>System Design and Scalability
 - Consider:
@@ -1769,316 +2003,9 @@ function partition(arr, left, right) {
 
 
 
-# <a id="language-frameworks"></a>Language Frameworks
-## <a id="html">HTML</a>
-- put `<script>` tags in `<head>` tags with async/defer
-  - async - run scripts and render HTML without blocking
-  - defer - run scripts after the other
-  - before, `<script>` was put at end of `<body>` tag to not block rendering of HTML b/c we assumed scripts would modify the DOM
-
-## <a id="CSS">CSS</a>
-
-## <a id="javascript">Javascript</a>
-- null is an object, so checking typeof as an object is sometimes not enough
-```
-var bar = null;
-typeof bar === "object"; // true
-solution: (bar !== null) && typeof bar === "object"); // false
-```
-- arrays are objects
-- if you want false for nulls, arrays, fucntions but true for object:
-```
-var bar = [];
-Array.isArray(bar) OR (bar !== null) && (bar.constructor === "object")
-```
-- JS supports named and anonymous functions
-- `var` vs `let`
-  - **var**: function scope
-  - **let**: block scope, introduced in ES6 (Ex: for loop - use let)
-  ```
-  for (var i = 0; i < 5; i++) {
-    setTimeout(function() { console.log(i); }, i * 1000)
-  }
-  // Output: 5,5,5,5 
-  // because setTimeout function will be executed after entire for loop runs when i is already 5
-  Soln: use `let` (block scope)
-  ```
-- undefined vs null
-  - **undefined**: variable is declared but no value has been assigned
-  - **null**: value of null is explicitly set
-  - `typeof undefined;  // undefined`
-  - `typeof null;  // "object"`
-- **Promises**
-  - JavaScript promise object can be in one of three states: `pending`, `resolved`, or `rejected`. While the value is not yet available, the Promise stays in the `pending` state. Afterwards, it transitions to one of the two states: `resolved` or `rejected` . A resolved promise stands for a successful completion. Due to errors, the promise may go in the rejected state.
-```
-const promise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve("Result");
-  }, 200);
-});
-
-promise.then(
-  (res) => {
-    console.log(res);
-  },
-  (err) => {
-    alert(err);
-  }
-);
-```
-- Eventing system
-```
-class Events {
-  on(eventName, callback) {...}
-  trigger(eventName) {...}
-  off (eventName) {...}
-}
-// events: onClick, onHover, onExit
-// can add functions to happen on eventName
-```
-- **Falsey values** include `false`, `0`, empty strings, `null`, `undefined`, and `NaN`. All other values are truthy.
-- **prototypical inheritance**: every object has prop called prototype that you can add methods to it and when you create another object from the newly created, it will automatically inherit its parent's property
-- **Closure**: inner function has access to outer function's variables and hold it's environments
-- Why do libraries wrap entire ocntent of JS source file in function block? jQuery and Node do this
-  - creates closure around entire contents of file
-  - creates private namespace -> avoids potential name classes between different JS modules and libraries
-- **use strict**: voluntary way to enforce stricter parsing and error handling on your JS code at runtime
-  - code errors that woudl ahve been ignored or fail silently will now generate errors or throw exceptions -> debugging easier
-  - prevent accidental globals
-    - w/o strict mode: assigning value to undeclared variable automatically creates global variable int aht name
-  - eliminates this coersion
-    - w/o strict mode: if `this` is null/undefined, then it goes up to using global `this`
-    - w/ strict mode: use `this` of null/undefined -> error
-  - disallow duplicate parameter  `Ex: function foo(val1, val1, val2)`
-- **Hoisting**: JS default behavior of moving declarations (but not initializations) to top of scope or function
-  ```
-  x = 5; //assign
-  console.log(x);
-  var x; // declare
-
-  SAME AS:
-  var x;
-  x = 5;
-  console.log(x)
-  ```
-  - initializations (assigning values) are not hoisted
-  ```
-  var x = 5;
-  console.log(x + " " + y); // "5 undefined"
-  var y = 7; // declaration var y is hoisted to the top but y=7 is not
-  ```
-  - best practice: declare all variables to top of scope
-    - use strict mode doesn't allow varaibles to be used if not decalred first
-- **NaN (Not a Number)**
-  - `typeof (NaN === "number") // true`
-  - is not equal to itself `NaN === NaN  // false`
-  - use: `Number.isNaN(3)`
-- **Event Loop**
-  - runs items on **call stack**(LIFO) first before `message queue`
-  - setTimeout goes to `message queue`
-  - **Event/Message/Callback Queue** (FIFO): contains events that gets triggered after onEvents (click, hover, mousemove) and setTimeout
--
-- **this**
-  - The `this` keyword is used inside a function. The `this` keyword is merely a reference to another object. What the `this` keyword refers to depends on the way the function is implemented.
-    - Here are the 3 scenarios to remember:
-      1. Scenario #1: this inside a function
-      The this keyword points to global object.
-      2. Scenario #2: this inside a method
-      The this keyword points to the object the
-      method is in.
-      3. Scenario #3: When function is run with
-      call, bind or apply
-      - When a function is called using the .call(param) .bind(param) or .apply(param) method, the frst param become the object that the this keyword refers to.
-    ```
-    var name = "Fatema";
-
-    function fun(){
-      // some code here
-      console.log(this.name);
-    }
-    const user = {
-      name: "Marium",
-      yearOfBirth: 1999,
-      calcAge: function(){
-        const currentYear = (new Date()).getFullYear();
-        return currentYear - this.yearOfBirth;
-      }
-    }
-
-    fun(); // 'this' is global. Logs "Fatema"
-    user.calcAge(); // 'this' is the user object
-    fun.call(user); // 'this' is the user object. Logs "Marium"
-    ```
-  - Important Note:
-    - In the browser, global is the window object.
-    - In Node.js, global is the global object
-- Write a `sum` method which will work properly when invoked using either syntax below.
-  ```
-  console.log(sum(2,3));   // Outputs 5
-  console.log(sum(2)(3));  // Outputs 5
-  ```
-  2 Solutions:
-  ```
-  Method 1: 
-  function sum(x) {
-    if (arguments.length == 2) {
-      return arguments[0] + arguments[1];
-    } else {
-      return function(y) { return x + y; };
-    }
-  }
-
-  Method 2: 
-  function sum(x, y) {
-    if (y !== undefined) {
-      return x + y;
-    } else {
-      return function(y) { return x + y; };
-    }
-  }
-  ```
-
-### String Methods
-- substring
-- substr()
-- .concat()
-- .charAt()
-- .indexOf()
-- .startsWith()
-- .endsWith()
-- .split()
-- .slice()
-
-### Array Methods
-- .pop()
-- .push()
-- .shift()
-- .unshift()
-- .indexOf()
-- .splice() - remove item by index position
-- .slice() - can make shallow copy
-.filter()
-.map()
-.find()
-.every()
-.some()
-.sort()
-.reduce()
-.forEach()
-
-### Number Methods
-- .toFixed()
-- .toPrecision()
-- .toString()
-
-### Math Methods
-```
-Math.pow(2, 3) // 8
-Math.sqrt(16) // 4
-Math.min(7, 8, 6) // 6
-Math.max(7, 8, 6) // 8
-Math.floor(123.45) // 123
-Math.ceil(123.45) // 124
-Math.round(123.45) // 123
-Math.random() // 0.45..
-```
-
-### Date Methods
-```
-const d = new Date('9/17/1988');
-d.getDay()
-d.getFullYear()
-d.getMonth()
-Date.now()
-Milliseconds since Jan 1, 1970
-```
 
 
-# <a id="web"></a>Web
-- When user types in URL into browser:
-1. Enter url into web browser
-2. DNS (domain name services) translates human-friendly domain name to computer friendly IP address (IP4 vs IP6)
-3. browser sends HTTP request to server
-4. server sends back HTTP response
-5. browser renders HTML
-6. brwoser sends request for additional objects embeded in HTML (images, CSS, JS)
-7. Once page is loaded, browser sends further async requests as needed
-
-## Storage
-- **Cookies**: small files on user's computer read by teh server-side (Remember: serve cookies)
-  - storage capacity 4kb
-  - accessed by either web server or client's computer
-  - basically key and value store (hash table)
-  - must be parsed to read
-  - use:
-    - carry info from 1 session on website to another session
-    - carry info between sessions on related websites
-    - if we stored this data on server without cookies, then user would have to login on each visit
-    - cookies can be made to persist for arbitrary amount of time
-- **LocalStorage**: stores data on client's computer (Remember: printing shop has local clients)
-  - save key/value pairs inw eb browser
-  - no expirationd ate
-   can only be accessed by JS and HTML5
-   - 5MB storage capacity (more than cookies 4kb)
-   - data not sent to server for every HTTP request -> dec traffic btw client and server
-
-
-## API
-- **RESTful services**
-  - implement CRUD using HTTP methods (GET, PUT, POST, DELETE)
-  - transfer XML or JSON or both
-  - stateless
-
-## Performance
-To reduce app load time
-  - bundle and minify all CSS and JS files
-  - **Content Delivery Network(CDN)** - redirects traffic to closest server, which caches content (web videos or bulky media) -> decrease latency of HTTP request if servers are geographically closer to the user and inc download speed
-  - **Cache** - reduce DB calls
-  - optimize images to less than screen resolution and save as compressed file
-  - 1 sprite image for all icon images of app and then use background-position to display it -> reduce HTTP requests
-  - test perforamnce with Lighthouse
-  - pre-load/pre-fetch data
-  - code-splitting
-  - service worker offline
-  - lazy load
-  - autopager
-  - infinite scroll
-  - SSR/initial data feed
-  - list virtualization - limit adding DOM elements to only what's viewable- 
-- Images
-  - compress images
-  - lazy load images
-  - progressive images - blurry to clear
-  - use SVG for icons
-  - CSS sprites -> reduce # of network requests
-  - caching through CDN
-
-
-## Security
-- **Cross-Origin Resource Sharing (CORS)** enables resources like JS, fonts, images on a webpage to be requested from an outside domain (recommended standard)
-  - `Same-Origin Policy` blocks web apps from making HTTP requests from different origins -> prevents attackers that plant scripts on various websites to make requests to sites with personal data (Ex: ads in Google ads)
-  - if server doesn't respond with specific cross-origin headers, browser will not allow JS to access the response
-  - uses **CORS headers** to give browser permission to let web app at 1 domain access resources from different domain
-- **Cross Site Scripting (XSS)** - security vulnerability where hackers try to inject HTML/Javascript ot steal confidential info from cookies and pass that info to themselves
-  - solution: sanitize inputs, escape, don't use eval, update libraries
-- **URL manipulation** - security vulnerability where hackers pass info in query string parameters and alter info to get authentication of servers and steal critical data
-
-
-## Testing
-- **Unit Testing**: validate taht each individual unit of software does what it is intended to do
-- **E2E Testing**: test flow of app from start-to-finish, usually from user perspective
-- test app in different browsers using tools like BrowserStack
-
-## Accessibility
-- alt text
-- color contrast
-- headers for structure
-- form inputs
-  - have labels
-  - can tab through inputs and keyboard accessible
-- allow enlarging fonts
-- audio/video/image description
-- readable urls
-- aria-roles
-- tables only for tabular data 
-
+## <a id="additional-resources"></a>Additional Resources
+[Khan Academy's Algorithm Course](https://www.khanacademy.org/computing/computer-science/algorithms)
+[Javascript interview questions](https://www.toptal.com/javascript/interview-questions)
+[Data Structures AlgoDaily](https://algodaily.com/lessons/an-executable-data-structures-cheat-sheet)
