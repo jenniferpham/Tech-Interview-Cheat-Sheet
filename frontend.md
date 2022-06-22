@@ -345,7 +345,21 @@ class Events {
 - .startsWith()
 - .endsWith()
 - .split()
-- .slice()
+- .slice(startIndex, endIndex) // The returns copied string excludes the end index
+    ```
+    const str = 'Everything is not what it seems'
+    str.slice(3) // copy everything after and including the 3rd index, 'r'
+    // returns 'rything is not what it seems'
+
+    str.slice(-5) // copy elements from the last index to the left 5 indices
+    // returns 'seems'
+
+    str.slice(-17, -6) // copy specified elements based on the indices counting from the end of the string
+    // returns 'not what it'
+
+    console.log(str) // str is not mutated
+    // 'Everything is not what it seems'
+    ```
 
 ### <a id="js-array-methods">Array Methods</a>
 - .pop()
@@ -353,8 +367,21 @@ class Events {
 - .shift()
 - .unshift()
 - .indexOf()
-- .splice() - remove item by index position
-- .slice() - can make shallow copy
+- .slice(startIndex, endIndex) // returns copied array excludes the end index
+    ```
+    const arr = ['alex', 'justin', 'max', 'harper', 'mason']
+
+    arr.slice(2) // copy everything after and including the 2nd index, 'max'
+    // returns ['max', 'harper', 'mason']
+
+    arr.slice(2, 4) // copy everything after the second index up to the 3rd index
+    // returns ['max', 'harper']
+
+    arr.slice(2, 5) // copy everything after the second index up to the 4th index
+    // returns [ 'max', 'harper', 'mason' ]
+    ```
+- .splice(startIndex, deleteCount [optional], newElem [optional], newElem [optional], ...) - mutates array and removes item by index position and can replace items
+    -  Remember: splice has an extra letter, 'p', compared to slice. Because of the extra letter, I associate the additional letter to splice's use of adding or removing from the original array. And because splice can add and remove stuff to the original array, that means that it also mutates the original array.
 .filter()
 .map()
 .find()
