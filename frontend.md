@@ -43,6 +43,7 @@
    can only be accessed by JS and HTML5
    - 5MB storage capacity (more than cookies 4kb)
    - data not sent to server for every HTTP request -> dec traffic btw client and server
+- **SessionStorage**
 
 
 ## <a id="api">API</a>
@@ -56,17 +57,49 @@ To reduce app load time
   - bundle and minify all CSS and JS files
   - **Content Delivery Network(CDN)** - redirects traffic to closest server, which caches content (web videos or bulky media) -> decrease latency of HTTP request if servers are geographically closer to the user and inc download speed
   - **Cache** - reduce DB calls
-  - optimize images to less than screen resolution and save as compressed file
-  - 1 sprite image for all icon images of app and then use background-position to display it -> reduce HTTP requests
-  - test perforamnce with Lighthouse
+  - **optimize images** to less than screen resolution and save as compressed file
+  - 1 **sprite image** for all icon images of app and then use background-position to display it -> reduce HTTP requests
+  - test perforamnce with **Lighthouse**
   - pre-load/pre-fetch data
-  - code-splitting
-  - service worker offline
+  - **code-splitting**
+  - **service worker** offline
   - lazy load
   - autopager
-  - infinite scroll
+  - **infinite scroll**
   - SSR/initial data feed
-  - list virtualization - limit adding DOM elements to only what's viewable- 
+  - **List virtualization**: limit adding DOM elements to only what's viewable
+    - So many elements in the DOM can cause two problems: slow initial rendering and laggy scrolling
+    - render to the DOM only what is visible to the user and unload them when they are not visible by replacing them with new ones
+    - when scrolling, the new list items render when they are in view and replace the old items that exit the viewport
+    - Libraries: `react-window` and `react-virtualized`
+  - **Pagination**
+      - split our large dataset into chunks ( or pages ) that we can gradually fetch and display to the user, thus reducing the load on the database
+      - works best on websites where users are looking for specific pieces of content, not just browsing content. 
+      - **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting, not good for goal-oriented tasks
+      - Pro:
+        - can save your spot and go back to it
+      - Con:
+        - extra action to click
+      - Types
+        1. **Offset Pagination**
+          - `limit` - Number of rows to fetch from the database
+          - `offset` - Number of rows to skip. Offset is like a page number, but with a bit of math around it (offset = (page-1) * limit)
+          -offset in databases is implemented in a way that loops through rows to know how many should be skipped. That means that the higher our offset is, the longer our database query will take.
+        2. **Cursor Pagination**
+          - `limit` - Same as before, amount of rows we want to show on one page
+          - `cursor` - ID of a reference element in the list. This can be the first item if you're querying the previous page and the last item if querying the next page
+          - `cursorDirection` - If user clicked Next or Previous (after or before)
+          - solve all issues that offset pagination has — performance, missing data and data duplication
+          - Queries that use a `cursor` instead of `offset` are more performant because the WHERE query helps skip unwanted rows, while OFFSET needs to iterate over them, resulting in a full-table scan. Skipping rows using WHERE can get even faster if you set up proper indexes on your IDs. The index is created by default in case of your primary key.
+    - **Infinite scrolling**: web-design technique that loads content continuously as the user scrolls down the page, eliminating the need for pagination
+      - good for browsing lists and feeds or discovery, without extra clicks/taps
+      - not good if you have a call to action at bottom. Endless scrolling is not recommended for goal-oriented finding tasks.
+      - API implemented similar to pagination
+      - **Pagination** works best on websites where users are looking for specific pieces of content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting. 
+      - Cons
+        - can’t bookmark their location and come back to it later like pagination
+        - lack of footer
+        - irrelevant scrollbar
 - Images
   - compress images
   - lazy load images
@@ -336,3 +369,23 @@ Milliseconds since Jan 1, 1970
 ```
 
 ## <a id="react">React</a>
+- improve user experience (React)
+    - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
+        - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
+    - **lazy loading images** we can wait until each of the images is about to appear in the viewport before we render them in the DOM
+        - Similar to the concept of windowing mentioned above, lazy loading images prevents the creation of unnecessary DOM nodes, boosting the performance of our React application.
+    - **useCallback** hook to remember function
+    - **useMemo** hook to remember calculation based on same input and output
+    - **code-splitting** 
+        - By default, when a React application renders in a browser, a “bundle” file containing the entire application code loads and serves to users at once. This file generates by merging all the code files needed to make a web application work.
+        - bundling is useful because it reduces the number of HTTP requests a page can handle. However, as an application grows, the file sizes increase, thus increasing the bundle file. At a certain point, this continuous file increase slows the initial page load, reducing the user’s satisfaction.
+        - React allows us to split a large bundle file into multiple chunks using dynamic import() followed by lazy loading these chunks on-demand using the React.lazy
+        ```
+        // before
+        import Home from "./components/Home";
+        import About from "./components/About";
+        
+        // after
+        const Home = React.lazy(() => import("./components/Home"));
+        const About = React.lazy(() => import("./components/About"));
+        ```

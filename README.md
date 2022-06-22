@@ -1914,7 +1914,8 @@ function partition(arr, left, right) {
       - Libraries: `react-window` and `react-virtualized`
     - **Pagination**
       - split our large dataset into chunks ( or pages ) that we can gradually fetch and display to the user, thus reducing the load on the database
-      - **Pagination** works best on websites where users are looking for specific pieces of content, not just browsing content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting, not good for goal-oriented tasks
+      - works best on websites where users are looking for specific pieces of content, not just browsing content. 
+      - **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting, not good for goal-oriented tasks
       - Pro:
         - can save your spot and go back to it
       - Con:
@@ -1947,7 +1948,7 @@ function partition(arr, left, right) {
           2) if cache doesn't contain that key -> go to db to look
         - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
         - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
-  - **Idempotent**
+  - **Idempotent** -  you can safely retry it with the same idempotency key. same input produces same output.
     - Stripe API implements idempotency keys on mutating endpoints (POST) by allowing clients to pass a unique value in with the special **Idempotency-Key** header, so if request fails due to a network connection error, you can safely retry it with the same idempotency key, and the customer is charged only once.
     - In REST API, GET and PUT and DELETE w/ same data are idempotent, not POST b/c given same input, it gives back same output
     - guarantees that it is safe to do over and over again
