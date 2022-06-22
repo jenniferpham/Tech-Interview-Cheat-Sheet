@@ -13,6 +13,7 @@
   - [CSS](#css)
   - [Javascript](#javascript)
   - [React](#react)
+- [References](#references)
 
 
 
@@ -389,3 +390,35 @@ Milliseconds since Jan 1, 1970
         const Home = React.lazy(() => import("./components/Home"));
         const About = React.lazy(() => import("./components/About"));
         ```
+
+# <a id="references">References</a>
+CSS:
+https://www.edureka.co/blog/interview-questions/css-interview-questions/ 
+CSS specificity: https://css-tricks.com/specifics-on-css-specificity/ 
+Flexbox https://css-tricks.com/snippets/css/a-guide-to-flexbox/ 
+HTML: 
+https://www.javatpoint.com/html-interview-questions 
+https://www.edureka.co/blog/interview-questions/top-50-html-interview-questions-and-answers/ 
+https://career.guru99.com/top-50-html-interview-questions/ 
+JS: 
+https://www.toptal.com/javascript/interview-questions
+https://www.guru99.com/javascript-interview-questions-answers.html 
+Slice vs splice https://sophiali.dev/javascript-slice-splice 
+JS Event Loop - https://felixgerschau.com/javascript-event-loop-call-stack/ 
+Sync vs async https://www.freecodecamp.org/news/synchronous-vs-asynchronous-in-javascript/ 
+JS memory: https://felixgerschau.com/javascript-memory-management/#the-memory-heap-and-stack 
+Map and set: https://www.taniarascia.com/understanding-map-and-set-javascript/ 
+Race conditions: https://www.lorenzweiss.de/race_conditions_explained/    https://www.nodejsdesignpatterns.com/blog/node-js-race-conditions/ 
+Cheat sheet https://cheatography.com/davechild/cheat-sheets/javascript/ 
+https://github.com/mbeaudru/modern-js-cheatsheet 
+React:
+https://www.sitepoint.com/react-interview-questions-solutions/ 
+https://medium.com/@vigowebs/frequently-asked-react-js-interview-questions-and-answers-36f3dd99f486 
+https://www.toptal.com/react/interview-questions 
+Optimizing performance in React: https://blog.logrocket.com/optimizing-performance-react-application/ 
+Redux
+Example of component with useEffect hook, useState, fetch data, custom hook: https://echobind.com/post/custom-react-hook-guide-build-a-kanye-quote-app-with-react-native 
+Fetch data: https://www.freecodecamp.org/news/fetch-data-react/ 
+React Native
+https://www.bestinterviewquestion.com/react-native-interview-questions 
+https://www.educative.io/blog/top-react-native-interview-questions 
