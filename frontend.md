@@ -1,6 +1,7 @@
 # FrontEnd Interview Cheat Sheet
 
-# Table of Content- [Web](#web)
+# Table of Content
+- [Web](#web)
   - [Storage](#storage)
   - [API](#api)
   - [Performance](#performance)
@@ -333,3 +334,5 @@ d.getMonth()
 Date.now()
 Milliseconds since Jan 1, 1970
 ```
+
+## <a id="react">React</a>

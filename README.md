@@ -197,7 +197,6 @@ var lengthOfLongestSubstring = function(s) {
 #### Definition
 - Stores data elements based on an sequential, most commonly 0 based, index.
 - Based on [tuples](http://en.wikipedia.org/wiki/Tuple) from set theory.
-- They are one of the oldest, most commonly used data structures.
 
 #### What you need to know
 - Optimal for indexing; bad at searching, inserting, and deleting (except at the end).
