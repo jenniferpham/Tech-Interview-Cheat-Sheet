@@ -337,13 +337,14 @@ class Events {
   ```
 
 ### <a id="js-string-methods">String Methods</a>
-- substring
-- substr()
+- substring(startIndex, endIndexNotIncluding)  // can also take negative startIndex from end of string
+- substr(from, length)
 - .concat()
 - .charAt()
 - .indexOf()
 - .startsWith()
 - .endsWith()
+- .repeat()
 - .split()
 - .slice(startIndex, endIndex) // The returns copied string excludes the end index
     ```

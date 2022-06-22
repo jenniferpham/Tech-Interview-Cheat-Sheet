@@ -9,6 +9,7 @@
   - [Linked List](#linked-list)
   - [Stack](#stack)
   - [Queue](#queue)
+    - [Priority Queue](#priority-queue)
   - [Tree](#tree)
     - [Binary Tree](#binary-tree)
     - [Breadth First Search](#breadth-first-search)
@@ -746,6 +747,36 @@ console.log(queue);
 
 queue.dequeue();
 console.log(queue);
+```
+
+#### <a id="priority-queue"></a> Priority Queue (FIFO)
+
+##### Class
+```
+// same as queue class except enqueue is different
+
+let queue = [];
+// element type ['Jennifer', 1] // 0 index is value and 1 index is the priority
+// [['Jennifer', 1], ['Bryan', 2], ['Serena', 3]]
+function enqueuePQ(element) {
+  if(queue.length === 0) {
+    queue.push(element);  
+  } else {
+    let added = false;
+    for (let i = 0; i < queue.length; i++) {
+      const priorityIndex = element[1];
+
+      if(priorityIndex < queue[i][1]) {  // compare priorities smallest to largest
+        queue.splice(i, 0, element);  // add element sorted by priority and mutate original array
+        added = true;
+        break;
+      }
+      if(!added) {
+        queue.push(element)
+      }
+    }
+  }
+}
 ```
 
 
