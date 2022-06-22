@@ -1039,39 +1039,25 @@ console.log(bst);
 
 #### Algorithms
 - **Is Valid Binary Search Tree**
+A valid BST is defined as follows:
+The left subtree of a node contains only nodes with keys less than the node’s key.
+The right subtree of a node contains only nodes with keys greater than the node’s key.
+Both the left and right subtrees must also be binary search trees.
 ```
-function isValidBSTUtil(node, min = null, max = null) {
-    // valid if there is no more nodes
-    if(!node) {
-        return true;
+// Recursive soln
+const isValidBST = function(root) {
+     
+    function helper(root, min = null, max = null){
+         if (!root){
+             return true
+         }
+        if ((min !== null && root.val <= min) || (max !== null && root.val >= max)){
+            return false
+        }
+        return helper(root.left, min, root.val) && helper(root.right, root.val, max)
     }
-    
-    if(max !== null && node.val >= max) {
-        return false;
-    }
-    if(min !== null && node.val <= min) {
-        return false;
-    }
-    const leftSide = isValidBSTUtil(node.left, min, node.val)
-    const rightSide = isValidBSTUtil(node.right, node.val, max)
-    return leftSide && rightSide;
-}
 
-var isValidBST = function(root) {
-    // a valid BST has node.left is LESS than node.val
-    // node.right is greater than node.val
-    // return false right away if this doesn't meet conditions
-    // return true
-    // traverse through: preOrder (parent node before children), postOrder (children before parent), inOrder (node.left, node, node.right)
-    
-    // edge case
-    if(root === null) {
-        return true;
-    }
-    
-    if(root.val <= root.left) return false;
-    if (root.val >= root.right) return false;
-    return isValidBST(root.left) && isValidBST(root.right);
+    return helper(root, null, null)
 };
 ```
 - **Find Min Node** (left-most node)
