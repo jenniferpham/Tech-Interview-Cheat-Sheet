@@ -844,9 +844,10 @@ console.log(newStack);
 - **Leaf node** - no children
 - **Edge** - connection btw 1 node to another
 - The number of links from the root to a node is called that node's **depth**.
-- The **height** of a tree is the number of links from its root to the furthest lleaf.
+- The **height** of a tree is the number of links from its root to the furthest leaf.
 - Pros:For most operations, the average time complexity is O(log(n)), which enables solid scalability. Worst time complexity varies between O(log(n)) and O(n).
 - Cons: Performance degrades as trees lose balance, and re-balancing requires effort. No constant time operations: trees are moderately fast at everything they do.
+- 2k+1 be the right child and 2k+2 the left child if represented in array
 
 #### What you need to know
 - Designed to optimize searching and sorting.

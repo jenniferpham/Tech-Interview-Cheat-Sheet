@@ -345,6 +345,7 @@ class Events {
 - .startsWith()
 - .endsWith()
 - .repeat()
+- .trim() - shave
 - .split()
 - .slice(startIndex, endIndex) // The returns copied string excludes the end index
     ```
