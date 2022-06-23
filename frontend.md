@@ -8,6 +8,7 @@
     - [GraphQL](#graphql)
   - [Performance](#performance)
   - [Security](#security)
+  - [Authentication](#auth)
   - [Testing](#testing)
   - [Accessibility](#accessibility)
 - [Language/Frameworks](#language-frameworks)
@@ -141,11 +142,23 @@ To reduce app load time
   - solution: sanitize inputs, escape, don't use eval, update libraries
 - **URL manipulation** - security vulnerability where hackers pass info in query string parameters and alter info to get authentication of servers and steal critical data
 
+## <a id="auth">Authentication</a>
+- **Single Sign On**
+    1. A user browses to the application or website they want access to, aka, the Service Provider (Ex: Glidewell).
+    2. The Service Provider sends a token that contains some information about the user, like their email address, to the SSO system, aka, the Identity Provider, as part of a request to authenticate the user.
+    3. The Identity Provider (Ex: Okta) first checks to see whether the user has already been authenticated, in which case it will grant the user access to the Service Provider application and skip to step 5.
+    4. If the user hasn’t logged in, they will be prompted to do so by providing the credentials required by the Identity Provider. This could simply be a username and password or it might include some other form of authentication like a One-Time Password (OTP).
+    5. Once the Identity Provider validates the credentials provided, it will send a token back to the Service Provider confirming a successful authentication.
+    6. This token is passed through the user’s browser to the Service Provider by **storing browser cookies**.
+    7. The token that is received by the Service Provider is validated according to the trust relationship that was set up between the Service Provider and the Identity Provider during the initial configuration.
+    8. The user is granted access to the Service Provider.
+
 
 ## <a id="testing">Testing</a>
 - **Unit Testing**: validate taht each individual unit of software does what it is intended to do
 - **E2E Testing**: test flow of app from start-to-finish, usually from user perspective
 - test app in different browsers using tools like BrowserStack
+- **Test Driven Development (TDD)**
 
 ## <a id="accessibility">Accessibility</a>
 - alt text
