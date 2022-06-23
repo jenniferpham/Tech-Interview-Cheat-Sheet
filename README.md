@@ -18,7 +18,6 @@
     - [Tries (Prefix Tries)](#prefix-tries)
   - [Graph](#graph)
 - [Algorithms](#algorithms)
-  - [Algorithm Basics](#algorithm-basics)
   - [Techniques](#algorithm-techniques)
     - [Divide and Conquer](#divide-conquer)
     - [Sliding Window](#sliding-window)
@@ -1279,7 +1278,23 @@ function breadthFirstSearch(root) {
 1. **In-Order** - left, root, right
 2. **Pre-Order** - root, left, right
 3. **Post-Order** - left, right, root
+```
+function inOrderDFSIterative(root) {
+  if(root === null) return []; // edge case
 
+  let stack = [root];
+  let result = [];
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+
+    if(current.left) stack.push(current.left);
+    visited.push(current.val)
+    if(current.right) stack.push(current.right);
+  }
+  return result;
+}
+```
 ```
 function inOrderDFS() {
   let visited = [];
@@ -1504,7 +1519,35 @@ run 2 simultaneous breadth-first searches, 1 from each node -> when their search
 ```
 
 # <a id="algorithms"></a> Algorithms
-## <a id="algorithm-basics"></a> Algorithm Basics
+## <a id="dynamic-programming"></a> Dynamic Programming
+- type of algorithm that works on the principle of recursion where each problem is broken into smaller sub-problems and the solution of the final problem is dependent on the solutions of the smaller ones
+- stores the solutions of each sub-problem and then using these states later to simplify complexities and reduce computation time.
+```
+// regular fib
+def fib(n):
+	if n <= 0:
+		raise Exception('Number must be greater than or equal to 1')
+	elif n == 1:
+		return 0
+	elif n == 2:
+		return 1
+	else:
+		return fib(n-1) + fib(n-2)
+
+// dynamic fib - stores solutions
+fib_array=[0, 1]
+
+def fib(n):
+	if n <= 0:
+		raise Exception('Number must be greater than or equal to 0')
+	elif n <= len(fib_array):
+		return fib_array[n - 1]
+	else:
+		temp = fib(n - 1) + fib(n - 2)
+		fib_array.append(temp)
+		return temp
+```
+
 ## <a id="math-algorithms"></a> Math Algorithms
 - **Reverse integer**
 ```
@@ -1512,7 +1555,7 @@ run 2 simultaneous breadth-first searches, 1 from each node -> when their search
 function reverse(x) {
   let result = 0;
   while(x !== 0) {
-    result = (result * 10) + (x % 10);
+    result = (result * 10) + (x % 10);  // (x % 10) to get last digit
     x = x/10;
   }
   const integerBoundary = Math.pow(2, 31);

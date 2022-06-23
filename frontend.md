@@ -150,7 +150,9 @@ To reduce app load time
     4. If the user hasn’t logged in, they will be prompted to do so by providing the credentials required by the Identity Provider. This could simply be a username and password or it might include some other form of authentication like a One-Time Password (OTP).
     5. Once the Identity Provider validates the credentials provided, it will send a token back to the Service Provider confirming a successful authentication.
     6. This token is passed through the user’s browser to the Service Provider by **storing browser cookies**.
+    - A cookie with the **Secure** attribute is only sent to the server with an encrypted request over the HTTPS protocol, can't be sent over HTTP and makes it harder for middle-person to manipulate it
     7. The token that is received by the Service Provider is validated according to the trust relationship that was set up between the Service Provider and the Identity Provider during the initial configuration.
+    - Json Web Token (JWT) has a digital signature to ensure that it wasn't changed in transit
     8. The user is granted access to the Service Provider.
 
 
