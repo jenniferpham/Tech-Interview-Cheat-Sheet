@@ -22,9 +22,12 @@
     - [Divide and Conquer](#divide-conquer)
     - [Sliding Window](#sliding-window)
     - [Multiple Pointers](#multiple-pointers)
+  - [Recursion](#recursie-algorithms)
+  - [Iterative](#iterative-algorithms)
+  - [Dynamic Programming](#dynamic-programming)
   - [Math Algorithms](#math-algorithms)
   - [Permutations vs Combinations](#permutation-combination)
-  - [Searching](#searching)
+  - [Search Algorithms](#search-algorithms)
     - [Linear Search](#linear-search)
     - [Binary Search](#binary-search)
   - [Sorting Algorithms](#sorting-algorithms)
@@ -907,10 +910,12 @@ console.log(root.getParentNode());
 console.log(children[1].getParentNode());
 ```
 
-### <a id="binary-tree"></a> Binary Search Tree
+### <a id="binary-tree"></a> Binary Tree
 - **Binary Tree**: tree-like data structure where every node has up to 2 child nodes (1 left and 1 right child node)
+- has 1 root
+- has exactly 1 path between root  and any node
 - different from ternary tree and n-ary trees
-- **Binary search trees**
+- <a id="binary-search-tree"></a>**Binary search trees**
   - 1 type of binary tree where all left descendants have a value sm
   - All left descendants < parent node
   - all right descendants > parent node
@@ -923,6 +928,9 @@ console.log(children[1].getParentNode());
 - **Perfect binary tree**: both full and complete, each level has max # of nodes (exactly (2^k - 1) nodes)
 - In an **unbalanced binary tree**, there is a significant difference in height between subtrees.
 - An completely one-sided tree is called a **degenerate tree** and becomes equivalent to a linked list.
+- tips for algorithms
+  - Does order matter? Breadth-first (use queue and while loop) or depth-first search (use stack and while loop or recursive which uses call stack)?
+  - Should we include nulls in queue or stack? (if question is about structure of tree, u usually need it. If question is about values of nodes, you can usually disregar null nodes)
 
 #### Time Complexity
 - Search:    Binary Search Tree: `O(log n)` on average, but `O(n)` for unbalanced trees like SLL
@@ -1037,6 +1045,83 @@ console.log(bst);
 
 
 #### Algorithms
+- **Contains Value**
+```
+// iterative
+function treeIncludes(root, target) {
+  if(root === null) return false;
+  const stack = [root];
+  while(stack.length > 0) {
+    const current = stack.pop();
+    if(current.val === target) return true;
+    if(current.left) stack.push(current.left);  // don't want to push nulls
+    if(current.right) stack.push(current.right);
+  }
+  return false;
+}
+
+// recursive
+function treeIncludes(root, target) {
+  if(root === null) return false;  //edge case
+  if(root.val === target) return true; // positive base case
+  return treeIncludes(root.left) || treeIncludes(root.right);
+}
+```
+
+- **Sum of Tree Values**
+```
+// iterative
+function sumTree(root) {
+  if(root === null) return 0;
+  let sum = 0;
+  let stack = [root];
+  while(stack.length > 0) {
+    const current = stack.pop();
+    sum += current.val;
+    if(current.left) stack.push(current.left);  // only push if child nodes are not null
+    if(current.right) stack.push(current.right);
+  }
+  return sum;
+}
+
+// recursive
+function sumTree(root) {
+  if(root === null) return 0;
+  return root.val + sumTree(root.left) + sumTree(root.right);
+}
+```
+
+- **Get Min Value in Tree**
+```
+// iterative
+function treeMinValue(root) {
+  if(root === null) return Infinity;
+  let min = Infinity;
+  let stack = [root];
+  while(stack.length > 0) {
+    let current = stack.pop();
+    min = Math.min(min, current.val);
+
+    if(current.left) stack.push(current.left);
+    if(current.right) stack.push(current.right);
+  }
+  return min;
+}
+
+// recursive
+function treeMinValue(root) {
+  if(root === null) return Infinity;
+
+  const leftMinValue = treeMinValue(root.left);
+  const rightMinValue = treeMinValue(root.right);
+
+  return Math.min(root.val, leftMinValue, rightMinValue);
+}
+```
+
+- **Max Root to Leaf Sum**
+
+
 - **Is Valid Binary Search Tree**
 A valid BST is defined as follows:
 The left subtree of a node contains only nodes with keys less than the node’s key.
@@ -1067,25 +1152,6 @@ function findMinNode(node) {
   } else {
     return findMinNode(node.left);
   }
-}
-```
-
-- **Contains Value**
-```
-function contains(val) {
-  let currentNode = this.root
-  let foundNode = false;
-  while(currentNode && !foundNode) {
-    if (currentNode.val === val) {
-      foundNode = true;
-      break;
-    } else if (val < currentNode.val) {
-      currentNode = currentNode.left;
-    } else {
-      currentNode = currentNode.right;
-    }
-  }
-  return foundNode;
 }
 ```
 
@@ -1519,109 +1585,7 @@ run 2 simultaneous breadth-first searches, 1 from each node -> when their search
 ```
 
 # <a id="algorithms"></a> Algorithms
-## <a id="dynamic-programming"></a> Dynamic Programming
-- type of algorithm that works on the principle of recursion where each problem is broken into smaller sub-problems and the solution of the final problem is dependent on the solutions of the smaller ones
-- stores the solutions of each sub-problem and then using these states later to simplify complexities and reduce computation time.
-```
-// regular fib
-def fib(n):
-	if n <= 0:
-		raise Exception('Number must be greater than or equal to 1')
-	elif n == 1:
-		return 0
-	elif n == 2:
-		return 1
-	else:
-		return fib(n-1) + fib(n-2)
 
-// dynamic fib - stores solutions
-fib_array=[0, 1]
-
-def fib(n):
-	if n <= 0:
-		raise Exception('Number must be greater than or equal to 0')
-	elif n <= len(fib_array):
-		return fib_array[n - 1]
-	else:
-		temp = fib(n - 1) + fib(n - 2)
-		fib_array.append(temp)
-		return temp
-```
-
-## <a id="math-algorithms"></a> Math Algorithms
-- **Reverse integer**
-```
-// x is an int
-function reverse(x) {
-  let result = 0;
-  while(x !== 0) {
-    result = (result * 10) + (x % 10);  // (x % 10) to get last digit
-    x = x/10;
-  }
-  const integerBoundary = Math.pow(2, 31);
-  if ((result < (integerBoundary * -1)) || (result > integerBoundary)) {
-    return 0;
-  } else {
-    return result;
-  }
-}
-```
-
-### <a id="permutation-combination">Permutations vs Combinations</a>
-- **Permutations** are for lists (order matters)
-  - formula: `P = n! / (n-k)!`
-  - You have n items and want to find # ways that k items can be ordered.
-  - You have 52 cards and want to find # possible ways to have a 5 card hand.
-- **Combinations** are for groups (order doesn't matter)
-  - formula: `C = n! / (k! * (n-k)!)`
-  - Find all the ways to pick k people from n and divide by the k! variants.
-  - Ex: Picking team of 3 from a group of 10
-  - Ex: Choosing 3 desserts from menu of 10
-
-
-## <a id="searching"></a> Searching
-### <a id="linear-search">Linear Search</a>
-- loop through all items in array once to see if there is a match
-- Avg and worst 0(n) - if it is found towards the end
-- Best 0(1) - if it is found early
-```
-function linearSearch(arr, val) {
-  for (let i = 0; i<arr.length; i++) {
-    if (arr[i] === val) {
-      return 1;
-    }
-  }
-  return -1;
-}
-```
-
-### <a id="binary-search">Binary Search</a>
-- input is **sorted array**
-- search for elements by comparing midpoint of array -> if less, search left half, and if more, search right half -> get new middle and cut in half again until you find it
-- Runtime:
-  - avg and worst O(log n)
-    - if you double nodes -> add only 1 more step
-    - 2^x = n  #x: 2^5 = 32
-  - Best 0(1)
-
-```
-function binarySearch(arr, elem) {
-  let leftIndex = 0; 
-  let rightIndex = arr.length - 1;
-  let middleIndex;
-  while (leftIndex <= rightIndex) {
-    middleIndex = Math.floor((leftIndex + rightIndex)/2)
-    if(elem < arr[middleIndex]) {
-      rightIndex = middleIndex - 1;
-    } else if (elem > arr[middleIndex]) {
-      leftIndex = middleIndex + 1;
-    } else {
-      return middle;
-    }
-    return -1 // error or can't find
-  }
-}
-```
 
 ### <a id="algorithm-techniques"></a>Techniques
 #### <a id="divide-conquer"></a> **Divide and Conquer**
@@ -1699,7 +1663,38 @@ function sumZero(arr) {
 }
 ```
 
-### Recursive Algorithms
+## <a id="math-algorithms"></a> Math Algorithms
+- **Reverse integer**
+```
+// x is an int
+function reverse(x) {
+  let result = 0;
+  while(x !== 0) {
+    result = (result * 10) + (x % 10);  // (x % 10) to get last digit
+    x = x/10;
+  }
+  const integerBoundary = Math.pow(2, 31);
+  if ((result < (integerBoundary * -1)) || (result > integerBoundary)) {
+    return 0;
+  } else {
+    return result;
+  }
+}
+```
+
+### <a id="permutation-combination">Permutations vs Combinations</a>
+- **Permutations** are for lists (order matters)
+  - formula: `P = n! / (n-k)!`
+  - You have n items and want to find # ways that k items can be ordered.
+  - You have 52 cards and want to find # possible ways to have a 5 card hand.
+- **Combinations** are for groups (order doesn't matter)
+  - formula: `C = n! / (k! * (n-k)!)`
+  - Find all the ways to pick k people from n and divide by the k! variants.
+  - Ex: Picking team of 3 from a group of 10
+  - Ex: Choosing 3 desserts from menu of 10
+
+
+### <a id="recursive-algorithms"></a>Recursive Algorithms
 #### Definition
 - An algorithm that calls itself in its definition.
   - **Recursive case** a conditional statement that is used to trigger the recursion.
@@ -1713,7 +1708,7 @@ function sumZero(arr) {
   - Often used in Depth First Search
 
 
-### Iterative Algorithms
+### <a id="iterative-algorithms"></a>Iterative Algorithms
 #### Definition
 - An algorithm that is called repeatedly but for a finite number of times, each time being a single iteration.
   - Often used to move incrementally through a data set.
@@ -1743,7 +1738,37 @@ recursive method (array, n)       | iterative method (array)
     exit loop                     |
 ```
 
-### Greedy Algorithms
+
+## <a id="dynamic-programming"></a> Dynamic Programming
+- type of algorithm that works on the principle of recursion where each problem is broken into smaller sub-problems and the solution of the final problem is dependent on the solutions of the smaller ones
+- stores the solutions of each sub-problem and then using these states later to simplify complexities and reduce computation time.
+```
+// regular fib
+def fib(n):
+	if n <= 0:
+		raise Exception('Number must be greater than or equal to 1')
+	elif n == 1:
+		return 0
+	elif n == 2:
+		return 1
+	else:
+		return fib(n-1) + fib(n-2)
+
+// dynamic fib - stores solutions
+fib_array=[0, 1]
+
+def fib(n):
+	if n <= 0:
+		raise Exception('Number must be greater than or equal to 0')
+	elif n <= len(fib_array):
+		return fib_array[n - 1]
+	else:
+		temp = fib(n - 1) + fib(n - 2)
+		fib_array.append(temp)
+		return temp
+```
+
+### <a id="greedy-algorithms"></a>Greedy Algorithms
 #### Definition
 - An algorithm that, while executing, selects only the information that meets a certain criteria.
 - The general five components, taken from [Wikipedia](http://en.wikipedia.org/wiki/Greedy_algorithm#Specifics):
@@ -1771,7 +1796,48 @@ greedy algorithm (array)
 This algorithm never needed to compare all the differences to one another, saving it an entire iteration.
 
 ## <a id="search-algorithms"></a>Search Algorithms
+### <a id="linear-search">Linear Search</a>
+- loop through all items in array once to see if there is a match
+- Avg and worst 0(n) - if it is found towards the end
+- Best 0(1) - if it is found early
+```
+function linearSearch(arr, val) {
+  for (let i = 0; i<arr.length; i++) {
+    if (arr[i] === val) {
+      return 1;
+    }
+  }
+  return -1;
+}
+```
 
+### <a id="binary-search">Binary Search</a>
+- input is **sorted array**
+- search for elements by comparing midpoint of array -> if less, search left half, and if more, search right half -> get new middle and cut in half again until you find it
+- Runtime:
+  - avg and worst O(log n)
+    - if you double nodes -> add only 1 more step
+    - 2^x = n  #x: 2^5 = 32
+  - Best 0(1)
+
+```
+function binarySearch(arr, elem) {
+  let leftIndex = 0; 
+  let rightIndex = arr.length - 1;
+  let middleIndex;
+  while (leftIndex <= rightIndex) {
+    middleIndex = Math.floor((leftIndex + rightIndex)/2)
+    if(elem < arr[middleIndex]) {
+      rightIndex = middleIndex - 1;
+    } else if (elem > arr[middleIndex]) {
+      leftIndex = middleIndex + 1;
+    } else {
+      return middle;
+    }
+    return -1 // error or can't find
+  }
+}
+```
 
 ## <a id="sorting-algorithms"></a>Sorting Algorithms
 ### Quadratic Sorting Algorithms
