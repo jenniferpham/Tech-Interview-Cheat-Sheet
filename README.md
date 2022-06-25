@@ -12,11 +12,14 @@
     - [Priority Queue](#priority-queue)
   - [Tree](#tree)
     - [Binary Tree](#binary-tree)
-    - [Breadth First Search](#breadth-first-search)
-    - [Depth First Search](#depth-first-search)
+    - [Breadth First Search](#breadth-first-search-tree)
+    - [Depth First Search](#depth-first-search-tree)
+    - [BFS vs DFS](#bfs-vs-dfs)
     - [Binary Heaps (min-heap and max-heap)](#binary-heap)
     - [Tries (Prefix Tries)](#prefix-tries)
-  - [Graph](#graph)
+  - [Graph](#graphs)
+    - [Breadth First Search](#breadth-first-search-graph)
+    - [Depth First Search](#depth-first-search-graph)
 - [Algorithms](#algorithms)
   - [Techniques](#algorithm-techniques)
     - [Divide and Conquer](#divide-conquer)
@@ -36,7 +39,15 @@
     - [Merge Sort](#merge-sort)
     - [Quick Sort](#quick-sort)
 - [System Design and Scalability](#system-design)
+  - [Frontend](#frontend)
+    - [How to handle lots of data on Front-end](#data-frontend)
+    - [Saving state](#save-state)
+  - [Scalability](#scalability)
   - [Database](#database)
+    - [Database Types](#database-types)
+      - [SQL (relational) Databases](#sql-db)
+      - [NoSQL (non-relational) Databases](#nosql-db)
+    - [Database Partitioning (Sharding)](#db-partitioning)
 - [Additional Resources](#additional-resources)
 
 
@@ -199,7 +210,6 @@ var lengthOfLongestSubstring = function(s) {
 ### <a id="array"></a> Array
 #### Definition
 - Stores data elements based on an sequential, most commonly 0 based, index.
-- Based on [tuples](http://en.wikipedia.org/wiki/Tuple) from set theory.
 
 #### What you need to know
 - Optimal for indexing; bad at searching, inserting, and deleting (except at the end).
@@ -928,9 +938,11 @@ console.log(children[1].getParentNode());
 - **Perfect binary tree**: both full and complete, each level has max # of nodes (exactly (2^k - 1) nodes)
 - In an **unbalanced binary tree**, there is a significant difference in height between subtrees.
 - An completely one-sided tree is called a **degenerate tree** and becomes equivalent to a linked list.
-- tips for algorithms
+- **Tips for algorithms**
   - Does order matter? Breadth-first (use queue and while loop) or depth-first search (use stack and while loop or recursive which uses call stack)?
   - Should we include nulls in queue or stack? (if question is about structure of tree, u usually need it. If question is about values of nodes, you can usually disregar null nodes)
+  - for recursive algorithms, think if there were no nodes and only 1 node, what should it return. those are your base cases.
+  - question about paths usually implies DFS
 
 #### Time Complexity
 - Search:    Binary Search Tree: `O(log n)` on average, but `O(n)` for unbalanced trees like SLL
@@ -1120,7 +1132,14 @@ function treeMinValue(root) {
 ```
 
 - **Max Root to Leaf Sum**
-
+```
+function maxPathSum(root) {
+  if(root === null) return -Infinity;  // base case and so you can call properties .left and .right later
+  if(root.left === null && root.right === null) return root.val;  // positive base case- this is leaf node
+  const maxChildPathSum = Math.max(maxPathSum(root.left), maxPathSum(root.right));
+  return root.val + maxChildPathSum;
+}
+```
 
 - **Is Valid Binary Search Tree**
 A valid BST is defined as follows:
@@ -1128,6 +1147,25 @@ The left subtree of a node contains only nodes with keys less than the node’s 
 The right subtree of a node contains only nodes with keys greater than the node’s key.
 Both the left and right subtrees must also be binary search trees.
 ```
+// Iterative soln
+var isValidBST = function(root) {
+    // use inorder traversal template
+    let prevVal = -Infinity;
+    let stack = [];
+    
+    while (root !== null || stack.length !== 0) {
+        while (root !== null) {
+            stack.push(root);
+            root = root.left;
+        }
+        root = stack.pop();
+        if (root.val <= prevVal) return false;
+        prevVal = root.val;
+        root = root.right;
+    }
+    return true;
+};
+
 // Recursive soln
 const isValidBST = function(root) {
      
@@ -1284,7 +1322,7 @@ const isBalanced = root => {
 };
 ```
 
-### <a id="breadth-first-search"></a>Breadth First Search
+### <a id="breadth-first-search-tree"></a>Breadth First Search
 #### Definition
 - An algorithm that searches a tree (or graph) by searching levels of the tree first, starting at the root.
   - It finds every node on the same level, most often moving left to right. (visits nodes by row)
@@ -1320,7 +1358,7 @@ function breadthFirstSearch(root) {
 }
 ```
 
-### <a id="depth-first-search"></a>Depth First Search
+### <a id="depth-first-search-tree"></a>Depth First Search
 #### Definition
 - An algorithm that searches a tree (or graph) by searching depth of the tree first, starting at the root.
   - It traverses left down a tree until it cannot go further.
@@ -1408,14 +1446,12 @@ function postOrderDFS() {
 }
 ```
 
-### Breadth First Search Vs. Depth First Search
+### <a id="bfs-vs-dfs"></a>Breadth First Search vs Depth First Search
 - The simple answer to this question is that it depends on the size and shape of the tree.
-  - For wide, shallow trees use Breadth First Search
-  - For deep, narrow trees use Depth First Search
-  - Because BFS uses queues to store information about the nodes and its children, it could use more memory than is available on your computer. (But you probably won't have to worry about this.)
-  - If using a DFS on a tree that is very deep you might go unnecessarily deep in the search. See [xkcd](http://xkcd.com/761/) for more information.
-  - Breadth First Search tends to be a looping algorithm.
-  - Depth First Search tends to be a recursive algorithm.
+  - If our tree is broad/wide, use DFS as BFS will take too much memory. Similarly, if our tree is very deep, choose BFS over DFS.
+  - **BFS** tends to be a queue and while loop algorithm, while **DFS** tends to be a stack and while loop or recursive algorithm.
+  - DFS are often used in simulations of games (and game-like situations in the real world). In a typical game you can choose one of several possible actions. Each choice leads to further choices, each of which leads to further choices, and so on into an ever-expanding tree-shaped graph of possibilities.
+  - BFS first finds all the vertices that are one edge away from the starting point, then all the vertices that are two edges away, and so on. This is useful if you’re trying to find the shortest path from the starting vertex to a given vertex.
 
 
 ### <a id="binary-heap"></a> Binary Heaps (Min Heaps and Max Heaps)
@@ -1696,17 +1732,18 @@ function reverse(x) {
 
 ### <a id="recursive-algorithms"></a>Recursive Algorithms
 #### Definition
-- An algorithm that calls itself in its definition.
-  - **Recursive case** a conditional statement that is used to trigger the recursion.
-  - **Base case** a conditional statement that is used to break the recursion.
-
+- A method that calls itself
+  - **Base case** - the stopping condition so that it stops calling itself
+  - **Recursive case** some small subproblem that calls itself. What is the smallest amount of work I can do in each iteration?
 #### What you need to know
 - **Stack level too deep** and **stack overflow**.
   - If you've seen either of these from a recursive algorithm, you messed up.
-  - It means that your base case was never triggered because it was faulty or the problem was so massive you ran out of alloted memory.
+  - It means that your base case was never triggered or the input was so massive you ran out of alloted memory.
   - Knowing whether or not you will reach a base case is integral to correctly using recursion.
-  - Often used in Depth First Search
-
+- Often used in Depth First Search
+- elegant solution for complex problems
+- can take up too much space
+- works well with JSON objects, trees, graphs - focus on 1 tiny unit at a time
 
 ### <a id="iterative-algorithms"></a>Iterative Algorithms
 #### Definition
@@ -1927,21 +1964,60 @@ function binarySearch(arr, elem) {
 ### <a id="merge-sort"></a>Merge Sort
 #### Definition
 - A divide and conquer algorithm.
-  - Recursively divides entire array by half into subsets until the subset is one, the base case.
-  - Once the base case is reached results are returned and sorted ascending left to right.
-  - Recursive calls are returned and the sorts double in size until the entire array is sorted.
+1. Split the given list into two halves (roughly equal halves in case of a list with an odd number of elements).
+2. Continue dividing the subarrays in the same manner until you are left with only single element arrays.
+3. Starting with the single element arrays, merge the subarrays so that each merged subarray is sorted.
+4. Repeat step 3 until we end up with a single sorted array.
 
 #### What you need to know
-- This is one of the fundamental sorting algorithms.
 - Know that it divides all the data into as small possible sets then compares them.
+- Merge Sort is one of the fastest sorting algorithms out there.
+- Unlike Quick Sort, Merge Sort is not an in-place sorting algorithm, meaning it takes extra space other than the input array. This is because we are using auxiliary (helper) arrays to store the sub-arrays. The space complexity of the merge sort is O(n).
+- Another advantage of Merge Sort is that it lends itself very well to multi-threading, since each respective half and be sorted on its own. Another common way of reducing the runtime of Merge Sort is to stop when we get to relatively small subarrays (~7) and using Insertion Sort to sort them. This is done because Insertion Sort performs really well on small, or nearly sorted arrays. Much better than it's more globally efficient counterparts.
 
 #### Time Complexity
 - Worst Case: `O(n log n)`
 - Average Case: `O(n log n)`
 - Best Case: `O(n)`
-
 #### Space Complexity
-- Worst Case: `O(1)`
+- Space Complexity - Worst Case: `O(1)`
+
+####  Algorithm
+```
+function mergeSort(arr) {
+  // No need to sort the array if the array only has one element or empty
+  if(arr.length <= 1) return arr; // base condition
+
+  // divide array into left half and right half
+  const middleIndex = Math.floor(arr.length / 2);
+  const left = mergeSort(arr.slice(0, middleIndex)); // merge left half, not including middleIndex
+  const right = mergeSort(arr.slice(middleIndex)); // merge right half, from middleIndex to end
+
+  // Using recursion to combine the left and right
+  return merge(left, right);
+}
+
+// helper function
+// Merge the two arrays: left and right
+function merge (left, right) {
+  let resultArray = [], leftIndex = 0, rightIndex = 0;
+
+  // We will concatenate values into the resultArray in order
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (left[leftIndex] < right[rightIndex]) {
+      resultArray.push(left[leftIndex]);
+      leftIndex++; // move left array cursor
+    } else {
+      resultArray.push(right[rightIndex]);
+      rightIndex++; // move right array cursor
+    }
+  }
+
+            // Concatenating the leftover elements
+    // (in case we didn't go through the entire left or right array. There will be at least 1 elem from euther left or right array.
+    return [ ...resultArray, ...left, ...right ]
+}
+```
 
 #### Visualization
 ![#](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Merge_sort_algorithm_diagram.svg/400px-Merge_sort_algorithm_diagram.svg.png)
@@ -1971,7 +2047,7 @@ function binarySearch(arr, elem) {
 ```
 function quickSort(arr, left = 0, right = arr.length - 1) {
   let index = partition (arr, left, right);
-  if (left < index - 1 { // sort left half
+  if (left < index - 1) { // sort left half
     quickSort(arr, left, index - 1)
   })
   if(index < right) { // sort right half
@@ -2007,12 +2083,176 @@ function partition(arr, left, right) {
 - Quicksort continually partitions the data set by a pivot, until the set is recursively sorted.
 
 
-### <a id="system-design"></a>System Design and Scalability
+# <a id="system-design"></a>System Design and Scalability
+
+## <a id="scalability">Scalability</a>
 - Consider:
   - Read-heavy - try caching
   - Write-heavy - queue up writes
+- ![Web Architecture](./assets/web-application-architecture-overview.png?raw=true "Web Application Architecture")
+- Types:
+  1. **Vertical Scaling** - buy bigger machines (easier but limited)
+    - no load balancer
+    - single point of failure
+    - inter-process communication fast
+    - consistent data (in only 1 machine)
+    - hardware limit
+  2. **Horizontal Scaling** - buy more machines
+    - load balancing required
+    - resilient
+    - slow network calls
+    - data inconsistent across multiple machines
+    - scales well as user increases
 
-#### Ex: Twitter
+## <a id="frontend">Frontend</a>
+
+### <a id="save-state">Save State</a>
+- save data on server side if possible
+  - 1 source of truth and consistent across all sessions and devices
+- client side
+  - useContext React API
+  - local component state like loading or error state for fetching data
+  - Web storage
+    - local storage or session storage
+  - state management libraries: React Context API, Redux, Recoil
+  - **Idempotent** -  you can safely retry it with the same idempotency key. same input produces same output.
+  - Stripe API implements idempotency keys on mutating endpoints (POST) by allowing clients to pass a unique value in with the special **Idempotency-Key** header, so if request fails due to a network connection error, you can safely retry it with the same idempotency key, and the customer is charged only once.
+  - In REST API, GET and PUT and DELETE w/ same data are idempotent, not POST b/c given same input, it gives back same output
+  - guarantees that it is safe to do over and over again
+  - When performing a request, a client generates a unique ID to identify that operation to the server along with the normal payload. The server receives the ID and correlates it with the state of the request on its end. If the client notices a failure, it retries the request with the same ID, and that ID guarantees that it's only done once.
+
+### <a id="data-frontend">How to handle lots of data on Front-end</a>
+  - **List virtualization**
+    - So many elements in the DOM can cause two problems: slow initial rendering and laggy scrolling
+    - render to the DOM only what is visible to the user and unload them when they are not visible by replacing them with new ones
+    - when scrolling, the new list items render when they are in view and replace the old items that exit the viewport
+    - Libraries: `react-window` and `react-virtualized`
+  - **Pagination**
+    - split our large dataset into chunks ( or pages ) that we can gradually fetch and display to the user, thus reducing the load on the database
+    - works best on websites where users are looking for specific pieces of content, not just browsing content. 
+    - **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting, not good for goal-oriented tasks
+    - Pro:
+      - can save your spot and go back to it
+    - Con:
+      - extra action to click
+    - Types
+      1. **Offset Pagination**
+        - `limit` - Number of rows to fetch from the database
+        - `offset` - Number of rows to skip. Offset is like a page number, but with a bit of math around it (offset = (page-1) * limit)
+        -offset in databases is implemented in a way that loops through rows to know how many should be skipped. That means that the higher our offset is, the longer our database query will take.
+      2. **Cursor Pagination**
+        - `limit` - Same as before, amount of rows we want to show on one page
+        - `cursor` - ID of a reference element in the list. This can be the first item if you're querying the previous page and the last item if querying the next page
+        - `cursorDirection` - If user clicked Next or Previous (after or before)
+        - solve all issues that offset pagination has — performance, missing data and data duplication
+        - Queries that use a `cursor` instead of `offset` are more performant because the WHERE query helps skip unwanted rows, while OFFSET needs to iterate over them, resulting in a full-table scan. Skipping rows using WHERE can get even faster if you set up proper indexes on your IDs. The index is created by default in case of your primary key.
+  - **Infinite scrolling**: web-design technique that loads content continuously as the user scrolls down the page, eliminating the need for pagination
+    - good for browsing lists and feeds or discovery, without extra clicks/taps
+    - not good if you have a call to action at bottom. Endless scrolling is not recommended for goal-oriented finding tasks.
+    - API implemented similar to pagination
+    - **Pagination** works best on websites where users are looking for specific pieces of content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting. 
+    - Cons
+      - can’t bookmark their location and come back to it later like pagination
+      - lack of footer
+      - irrelevant scrollbar
+  - **Content Delivery Network (CDN)** - CDN servers may be geographically closer to user, so cached content loaded using that server closest to the end user may load responses faster
+    - cache static files like images, CSS, JavaScript, videos, PDF (but can also serve dynamic content if needed).
+  - **Caching** - going from server to database is very expensive. Must get data first time but you can cache in memory store like Redis to reduce hitting the database 
+      - simple key-value pairing and sits btw app and db
+      - when app requests info, it 
+        1) tries cache first 
+        2) if cache doesn't contain that key -> go to db to look
+      - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
+      - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
+      - Try to achieve a higher** cache hit ratio **(how many times you can reuse the same cached response);
+  - **Load Balancer**: balances/distributes load to different servers so 1 server isn't overloaded and crash
+    - frontend can also be thrown behind load balancer 
+    - Types of load balancers:
+      -  A hosted service (e.g. Elastic Load Balancer by Amazon);
+      - A self-managed software-based load balancer (e.g. Nginx);
+      - A hardware load balancer.
+
+
+### Improve user experience in React
+  - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
+    - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
+  - **lazy loading images** we can wait until each of the images is about to appear in the viewport before we render them in the DOM
+    - Similar to the concept of windowing mentioned above, lazy loading images prevents the creation of unnecessary DOM nodes, boosting the performance of our React application.
+  - **useCallback** hook to remember function
+  - **useMemo** hook to remember calculation based on same input and output
+  - **code-splitting** 
+    - By default, when a React application renders in a browser, a “bundle” file containing the entire application code loads and serves to users at once. This file generates by merging all the code files needed to make a web application work.
+    - bundling is useful because it reduces the number of HTTP requests a page can handle. However, as an application grows, the file sizes increase, thus increasing the bundle file. At a certain point, this continuous file increase slows the initial page load, reducing the user’s satisfaction.
+    - React allows us to split a large bundle file into multiple chunks using dynamic import() followed by lazy loading these chunks on-demand using the React.lazy
+    ```
+      // before
+      import Home from "./components/Home";
+      import About from "./components/About";
+      
+      // after
+      const Home = React.lazy(() => import("./components/Home"));
+      const About = React.lazy(() => import("./components/About"));
+    ```
+
+## <a id="database">Database</a>
+### <a id="database-types">Database Types</a> 
+  - **SQL Databases (Relational Database)(RDBMS) vs NoSQL Databases (Non-relational database)**
+    - SQL databases are table based databases whereas NoSQL databases can be document based, key-value pairs, graph databases.
+    - SQL databases are vertically scalable while NoSQL databases are horizontally scalable.
+    - SQL databases have a predefined schema whereas NoSQL databases use dynamic schema for unstructured data.
+#### <a id="sql-db"></a>SQL (Relational) Database
+- SQL databases are valuable in handling structured data, or data that has relationships between its variables and entities. Because SQL works with such a strictly predefined schema, it requires organizing and structuring data before starting with the SQL database.
+  - Relational databases like MySQL Database, Oracle, Ms SQL Server, Sybase, etc. use SQL 
+  - should be used when data validity is super important
+  - SQL database has a high level of reliability - **ACID Compliance**:
+    - **ACID (atomicity, consistency, isolation, durability)** is a set of properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps. 
+    - For example, a transfer of funds from one bank account to another, even involving multiple changes such as debiting one account and crediting another, is a single transaction.
+    - **Atomicity**: All transactions must succeed or fail completely and cannot be left partially complete, even in the case of system failure. If 1 part fails, it will roll back to previou state.
+    - **Consistency**: The database must follow rules that validate and prevent corruption at every step.
+    - **Isolation**: Concurrent transactions cannot affect each other.
+    - **Durability**: Transactions are final, and even system failure cannot “roll back” a complete transaction.
+#### <a id="nosql-db"></a>NoSQL(non-relational) Database 
+- **NoSQL** is a non-relational database, meaning it allows different structures than a SQL database (not rows and columns) and more flexibility to use a format that best fits the data. 
+  - does not require a fixed schema, avoids joins, and is easy to scale
+  - use when it’s more important to have fast data than correct data and you need to scale based on changing requirements
+  -  different data structures within a database. Because they allow a dynamic schema for unstructured data, there’s less need to pre-plan and pre-organize data, and it’s easier to make modifications. NoSQL databases allow you to add new attributes and fields, as well as use varied syntax across databases.
+  - NoSQL databases scale better horizontally, which means one can add additional servers or nodes as needed to increase load.
+  - **CAP theorm**: it is impossible to build a distributed system that would simultaneously guarantee Consistency, Availability, and Partition tolerance. only 2 of 3 attributes can be met at a time. 
+    - Consistency: The same data becomes visible to all of the nodes at the same time. Every request receives either the most recent result or an error. MongoDB is an example of a strongly consistent system, whereas others such as Cassandra offer eventual consistency.
+    - Availability: Every request has a non-error or valid response.
+    - Partition tolerance: Any delays or losses between nodes do not interrupt the system operation.
+  - not tables and rows
+    -  Column-oriented, where data is stored in cells grouped in a virtually unlimited number of columns rather than rows.
+    - Key-value stores, which use an associative array (also known as a dictionary or map) as their data model. This model represents data as a collection of key-value pairs.
+    - Document stores, which use documents to hold and encode data in standard formats, including XML, YAML, JSON (JavaScript Object Notation) and BSON. A benefit is that documents within a single database can have different data types.
+    - Graph databases, which represent data on a graph that shows how different sets of data relate to each other. Neo4j, RedisGraph (a graph module built into Redis) and OrientDB are examples of graph databases.
+
+### <a id="db-partitioning"></a>Database Partitioning (Sharding)
+- splitting data across multiple machines while ensuring you have way of figuring out which data is on which machine
+- Types:
+  1. **Vertical Partitioning**: partitioning by feature
+    - Ex: building social network -> 1 partition for tables related to profiles, 1 for messages, etc.
+    - drawback: if 1 of these tables gets very large, you will need to re-partition
+  2. **Key-Based (or Hash-Based) Partitioning**: use some part of data (Ex: ID) to partition modules
+    - Ex: allocate N servers and put data on mod (key)
+    - drawback: # of servers is fixed. If you add more servers -> re-allocate all the data (very expensive)
+  3. **Directory-based Partitioning**: maintain lookup data where data can be found
+    - easy to add additional servers
+    - drawbacks: Lookup table is single point of failure and constantly accessing this table impacts performance
+- most architectures use multiple partitioning schemas
+
+## Examples:
+- Design TinyURL or bit.ly
+- Youtube/Netflix
+- Quora/Reddit/HackerNews (social network or message board forum system)
+- FB Messenger or Whatsapp
+- Dropbox/Google Drive/ Google Photos
+- FB, Twitter, Instagram
+- Web crawler
+Uber
+- Rate limiter
+
+Ex: Twitter
 1. Ask interviewer questions
   - Ask about your assumptions
   - Estimate when necessary
@@ -2038,116 +2278,14 @@ function partition(arr, left, right) {
   - focus on data model (Ex: how to store tweets or users or follows in db)
   - I would use web framework taht can easily render list of tweets and easily show on mobile-friendly device
   - Ex: React Native for all 3 (web, android, ios)
-  - **SQL Databases (Relational Database)(RDBMS) vs NoSQL Databases (Non-relational database)**
-    - SQL databases are table based databases whereas NoSQL databases can be document based, key-value pairs, graph databases.
-    - SQL databases are vertically scalable while NoSQL databases are horizontally scalable.
-    - SQL databases have a predefined schema whereas NoSQL databases use dynamic schema for unstructured data.
-    - **SQL** SQL databases are valuable in handling structured data, or data that has relationships between its variables and entities. Because SQL works with such a strictly predefined schema, it requires organizing and structuring data before starting with the SQL database.
-      - Relational databases like MySQL Database, Oracle, Ms SQL Server, Sybase, etc. use SQL 
-      - should be used when data validity is super important
-      - SQL database has a high level of reliability - **ACID Compliance**:
-        - **ACID (atomicity, consistency, isolation, durability)** is a set of properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps. 
-        - For example, a transfer of funds from one bank account to another, even involving multiple changes such as debiting one account and crediting another, is a single transaction.
-        - **Atomicity**: All transactions must succeed or fail completely and cannot be left partially complete, even in the case of system failure. If 1 part fails, it will roll back to previou state.
-        - **Consistency**: The database must follow rules that validate and prevent corruption at every step.
-        - **Isolation**: Concurrent transactions cannot affect each other.
-        - **Durability**: Transactions are final, and even system failure cannot “roll back” a complete transaction.
-    - **NoSQL** is a non-relational database, meaning it allows different structures than a SQL database (not rows and columns) and more flexibility to use a format that best fits the data. 
-      - does not require a fixed schema, avoids joins, and is easy to scale
-      - use when it’s more important to have fast data than correct data and you need to scale based on changing requirements
-      -  different data structures within a database. Because they allow a dynamic schema for unstructured data, there’s less need to pre-plan and pre-organize data, and it’s easier to make modifications. NoSQL databases allow you to add new attributes and fields, as well as use varied syntax across databases.
-      - NoSQL databases scale better horizontally, which means one can add additional servers or nodes as needed to increase load.
-      - CAP theorm
-        - Consistency: Every request receives either the most recent result or an error. MongoDB is an example of a strongly consistent system, whereas others such as Cassandra offer eventual consistency.
-        - Availability: Every request has a non-error result.
-        - Partition tolerance: Any delays or losses between nodes do not interrupt the system operation.
-      - not tables and rows
-        -  Column-oriented, where data is stored in cells grouped in a virtually unlimited number of columns rather than rows.
-        - Key-value stores, which use an associative array (also known as a dictionary or map) as their data model. This model represents data as a collection of key-value pairs.
-        - Document stores, which use documents to hold and encode data in standard formats, including XML, YAML, JSON (JavaScript Object Notation) and BSON. A benefit is that documents within a single database can have different data types.
-        - Graph databases, which represent data on a graph that shows how different sets of data relate to each other. Neo4j, RedisGraph (a graph module built into Redis) and OrientDB are examples of graph databases.
+
 5. Identify and Address Difficulties and Trade-offs with Scaling and Performance
   - this shows your experience buliding software that you can predict difficulties before starting
   - slow operations should ideally be done asyncronously to avoid making user wait long time
-  - How to handle lots of data
-    - **List virtualization**
-      - So many elements in the DOM can cause two problems: slow initial rendering and laggy scrolling
-      - render to the DOM only what is visible to the user and unload them when they are not visible by replacing them with new ones
-      - when scrolling, the new list items render when they are in view and replace the old items that exit the viewport
-      - Libraries: `react-window` and `react-virtualized`
-    - **Pagination**
-      - split our large dataset into chunks ( or pages ) that we can gradually fetch and display to the user, thus reducing the load on the database
-      - works best on websites where users are looking for specific pieces of content, not just browsing content. 
-      - **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting, not good for goal-oriented tasks
-      - Pro:
-        - can save your spot and go back to it
-      - Con:
-        - extra action to click
-      - Types
-        1. **Offset Pagination**
-          - `limit` - Number of rows to fetch from the database
-          - `offset` - Number of rows to skip. Offset is like a page number, but with a bit of math around it (offset = (page-1) * limit)
-          -offset in databases is implemented in a way that loops through rows to know how many should be skipped. That means that the higher our offset is, the longer our database query will take.
-        2. **Cursor Pagination**
-          - `limit` - Same as before, amount of rows we want to show on one page
-          - `cursor` - ID of a reference element in the list. This can be the first item if you're querying the previous page and the last item if querying the next page
-          - `cursorDirection` - If user clicked Next or Previous (after or before)
-          - solve all issues that offset pagination has — performance, missing data and data duplication
-          - Queries that use a `cursor` instead of `offset` are more performant because the WHERE query helps skip unwanted rows, while OFFSET needs to iterate over them, resulting in a full-table scan. Skipping rows using WHERE can get even faster if you set up proper indexes on your IDs. The index is created by default in case of your primary key.
-    - **Infinite scrolling**: web-design technique that loads content continuously as the user scrolls down the page, eliminating the need for pagination
-      - good for browsing lists and feeds or discovery, without extra clicks/taps
-      - not good if you have a call to action at bottom. Endless scrolling is not recommended for goal-oriented finding tasks.
-      - API implemented similar to pagination
-      - **Pagination** works best on websites where users are looking for specific pieces of content. **Infinite scroll** is better suited for the exploration of content, where users are browsing aimlessly for something interesting. 
-      - Cons
-        - can’t bookmark their location and come back to it later like pagination
-        - lack of footer
-        - irrelevant scrollbar
-    - **Content Delivery Network (CDN)** - CDN servers may be geographically closer to user, so responses may come back faster
-    - **Caching** - going from server to database is very expensive. Must get data first time but you can cache in memory store like Redis to reduce hitting the database 
-        - simple key-value pairing and sits btw app and db
-        - when app requests info, it 
-          1) tries cache first 
-          2) if cache doesn't contain that key -> go to db to look
-        - u can cache a query, its results or specific object (like rendered version of website or most recent blog post)
-        - used cached version  Ex: display page that lists popular posts and comments that are slightly out of date
-  - **Idempotent** -  you can safely retry it with the same idempotency key. same input produces same output.
-    - Stripe API implements idempotency keys on mutating endpoints (POST) by allowing clients to pass a unique value in with the special **Idempotency-Key** header, so if request fails due to a network connection error, you can safely retry it with the same idempotency key, and the customer is charged only once.
-    - In REST API, GET and PUT and DELETE w/ same data are idempotent, not POST b/c given same input, it gives back same output
-    - guarantees that it is safe to do over and over again
-    - When performing a request, a client generates a unique ID to identify that operation to the server along with the normal payload. The server receives the ID and correlates it with the state of the request on its end. If the client notices a failure, it retries the request with the same ID, and that ID guarantees that it's only done once.
-  - Save State
-    - save data on server side if possible
-      - 1 source of truth and consistent across all sessions and devices
-    - client side
-      - useContext React API
-      - local component state like loading or error state for fetching data
-      - Web storage
-        - local storage or session storage
-      - state management libraries: React Context API, Redux, Recoil
-  - improve user experience (React)
-    - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
-      - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
-    - **lazy loading images** we can wait until each of the images is about to appear in the viewport before we render them in the DOM
-      - Similar to the concept of windowing mentioned above, lazy loading images prevents the creation of unnecessary DOM nodes, boosting the performance of our React application.
-    - **useCallback** hook to remember function
-    - **useMemo** hook to remember calculation based on same input and output
-    - **code-splitting** 
-      - By default, when a React application renders in a browser, a “bundle” file containing the entire application code loads and serves to users at once. This file generates by merging all the code files needed to make a web application work.
-      - bundling is useful because it reduces the number of HTTP requests a page can handle. However, as an application grows, the file sizes increase, thus increasing the bundle file. At a certain point, this continuous file increase slows the initial page load, reducing the user’s satisfaction.
-      - React allows us to split a large bundle file into multiple chunks using dynamic import() followed by lazy loading these chunks on-demand using the React.lazy
-      ```
-        // before
-        import Home from "./components/Home";
-        import About from "./components/About";
-        
-        // after
-        const Home = React.lazy(() => import("./components/Home"));
-        const About = React.lazy(() => import("./components/About"));
-      ```
  
-  - **Load Balancer**: balances/distribbutes load to different servers so 1 server isn't overloaded and crash
-    - frontend can also be thrown behind load balancer 
+ 
+ 
+
   - Ex: Some urls infrequently accessed and others can peak (popular form in Reddit) -> don't want it to constantly hit db so use a memory store
   - Types of scaling
     1. **Vertical scaling** - inc resources to specific node
@@ -2172,3 +2310,4 @@ function partition(arr, left, right) {
 [Khan Academy's Algorithm Course](https://www.khanacademy.org/computing/computer-science/algorithms)
 [Javascript interview questions](https://www.toptal.com/javascript/interview-questions)
 [Data Structures AlgoDaily](https://algodaily.com/lessons/an-executable-data-structures-cheat-sheet)
+[Software Architecture](https://medium.com/@olgamitroshyna/software-architecture-i-wish-i-had-known-about-this-earlier-4df43eae57db)
