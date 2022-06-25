@@ -676,7 +676,7 @@ Adding 2 linked lists together and returning a linked list
 */
 
 ```
-- **Intersecting linekd lists**
+- **Intersecting linked lists**
 ```
 /*
 - if 2 linked lists, intersect, they will share same tail (reference is the same, checking value of tail is not enough)
@@ -1139,6 +1139,59 @@ function maxPathSum(root) {
   const maxChildPathSum = Math.max(maxPathSum(root.left), maxPathSum(root.right));
   return root.val + maxChildPathSum;
 }
+```
+
+- [**Sum of Root to Leaf Path**](https://leetcode.com/problems/path-sum/)
+Given the root of a binary tree and an integer targetSum, return true if the tree has a root-to-leaf path such that adding up all the values along the path equals targetSum.
+```
+// recursive
+var hasPathSum = function(root, targetSum) {
+    if(root === null) return false;
+    // if it's a leaf node, then return it's value
+    
+    // subtract root value from target sum
+    targetSum -= root.val;
+    
+    // base case positive
+     if(!root.left && !root.right) {  // leaf node
+        return targetSum === 0;  // returns true/false once it reaches leaf node
+     }
+    
+    const leftPathSum = hasPathSum(root.left, targetSum)
+    const rightPathSum = hasPathSum(root.right, targetSum)
+    
+    return leftPathSum || rightPathSum
+}
+
+// iterative
+var hasPathSum = function(root, targetSum) {  
+    if(root === null) return false;
+    
+    // keep track of tree nodes
+    // start off with targetSum minus root.val. Keep subtracting as you traverse down to the leaf node.
+    // stack has these objects to keep track of diff { node: root, diff: # }
+    let stack = [{node: root, diff: targetSum - root.val}];
+    
+    while(stack.length > 0) {
+        const current = stack.pop();
+        const diff = current.diff;
+        const currentNode = current.node;
+        
+          // if child node, break
+        // OR if target sum is hit, then break? but can remaining numbers be 0?
+        if(!currentNode.left && !currentNode.right && diff === 0) { // leaf node
+            return true;
+        } else if (!currentNode.left && !currentNode.right && diff !== 0) {
+            continue; //  find other path but break out of this current loop
+        }
+        
+        if(currentNode.left) stack.push({node: currentNode.left, diff: current.diff - currentNode.left.val});
+        if(currentNode.right) stack.push({node: currentNode.right, diff: current.diff - currentNode.right.val});
+        
+    }
+    
+    return false;
+};
 ```
 
 - **Is Valid Binary Search Tree**
