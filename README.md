@@ -479,43 +479,18 @@ console.log(dict.get("james"));
 ### <a id="linked-list"></a> Linked List
 #### Definition
 - Stores data with **nodes** that point to other nodes.
-  - A linked list _chains_ nodes together by pointing one node's reference towards another node.
-  Each element is called a node.
-The first node is called the head.
-The last node is called the tail.
-Nodes are sequential. Each node stores a reference (pointer) to one or more adjacent nodes:
-In a singly linked list, each node stores a reference to the next node.
-In a doubly linked list, each node stores references to both the next and the previous nodes. This enables traversing a list backwards.
-
-Stacks and queues are usually implemented using linked lists, and less often using arrays.
-Pros:
-Optimized for fast operations on both ends, which ensures constant time insertion and deletion.
-Flexible capacity. Doesn't require setting initial capacity, can be expanded indefinitely.
-Cons:
-Costly access and search.
-Linked list nodes don't occupy continuous memory locations, which makes iterating a linked list somewhat slower than iterating an array.
-
-#### What you need to know
-- Designed to optimize insertion and deletion, slow at indexing and searching.
-- excellent alternative to arrays when insertion and deletion at beginning are frequenely required (array insertion at beginning requires all indices after to re-index, which is inefficient) (Arrays contain built-in index whereas linked lists don't) 
-- Linked lists are the foundation of Stacks and Queues
+- The first node is called the **head**.
+- The last node is called the **tail**.
 - **Single-linked list** vs **double-linked list**
   - Nodes on single-linked list have `.val` and `.next`, while double-linked lists have `.val`, `.next` and `.prev` property
   - DLL is better than SLL for finding nodes (done in half the time because you can start at the tail instead of head). DLL allows for traversing a list backwards.
   - DLL takes up more memory considering extra pointer
+
+#### What you need to know
+- Designed to optimize insertion and deletion, slow at indexing and searching.
+- excellent alternative to arrays when insertion and deletion at beginning are frequenely required (array insertion at beginning requires all indices after to re-index, which is inefficient) (Arrays contain built-in index whereas linked lists don't) 
+- Stacks (SLL) and Queues (DLL) are commonly implemented with Linked Lists, less often using arrays
 - **Circularly linked list** is simple linked list whose **tail**, the last node, references the **head**, the first node.
-- **Stack**, commonly implemented with linked lists (less often with an array).
-  - Stacks are **last in, first out** (LIFO) data structures.
-  - Made with a linked list by having the head be the only place for insertion and removal.
-- **Queues**, too can be implemented with a linked list (less often with array).
-  - Queues are a **first in, first out** (FIFO) data structure.
-  - Made with a doubly linked list that only removes from head and adds to tail.
-- Pros:
-  - Optimized for fast operations on both ends, which ensures constant time insertion and deletion.
-  - Flexible capacity. Doesn't require setting initial capacity, can be expanded indefinitely.
-- Cons:
-  - Costly access and search.
-  - Linked list nodes don't occupy continuous memory locations, which makes iterating a linked list somewhat slower than iterating an array.
 
 #### Time Complexity
 - Indexing:         Linked Lists: `O(n)`
@@ -707,6 +682,8 @@ Move SLow pointer and fast pointer at 1 step/time -> return collision spot.
 
 ### <a id="queue"></a> Queues (FIFO)
 #### What you need to know
+- Made with a doubly linked list - removes from head (dequeue) and adds to tail (enqueue)
+- FIFO - First In First Out
 - fast insertion and deletion = 0(1)
 - searching and access = 0(n) -> if you need to search or access within the queue, use a different structure
 - don't really want to implement queue as an array because inserting and removing the first item requires re-indexing all items afterwards, which is 0(n) vs 0(1) with queue or linked list
@@ -794,6 +771,8 @@ function enqueuePQ(element) {
 
 ### <a id="stack"></a> Stacks (LIFO)
 #### What you need to know
+- LIFO = Last In First Out
+- Made with a linked list by having the head be the only place for insertion (push) and removal (pop).
 - fast insertion and removal = 0(1)
 - searching and access = 0(n) -> if you need to search or access within the stack, use a different structure
 - LIFO - last in first out - like stack of dishes
