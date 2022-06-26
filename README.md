@@ -18,8 +18,9 @@
     - [Binary Heaps (min-heap and max-heap)](#binary-heap)
     - [Tries (Prefix Tries)](#prefix-tries)
   - [Graph](#graphs)
-    - [Breadth First Search](#breadth-first-search-graph)
-    - [Depth First Search](#depth-first-search-graph)
+    - [BFS vs DFS](#bfs-vs-dfs-graph)
+    - [Breadth First Search](#bfs-graph)
+    - [Depth First Search](#dfs-graph)
 - [Algorithms](#algorithms)
   - [Techniques](#algorithm-techniques)
     - [Divide and Conquer](#divide-conquer)
@@ -1480,10 +1481,9 @@ function postOrderDFS() {
 
 ### <a id="bfs-vs-dfs"></a>Breadth First Search vs Depth First Search
 - The simple answer to this question is that it depends on the size and shape of the tree.
+  - BFS grows the tree level by level, whereas DFS grows it sub-tree by sub-tree. 
   - If our tree is broad/wide, use DFS as BFS will take too much memory. Similarly, if our tree is very deep, choose BFS over DFS.
   - **BFS** tends to be a queue and while loop algorithm, while **DFS** tends to be a stack and while loop or recursive algorithm.
-  - DFS are often used in simulations of games (and game-like situations in the real world). In a typical game you can choose one of several possible actions. Each choice leads to further choices, each of which leads to further choices, and so on into an ever-expanding tree-shaped graph of possibilities.
-  - BFS first finds all the vertices that are one edge away from the starting point, then all the vertices that are two edges away, and so on. This is useful if you’re trying to find the shortest path from the starting vertex to a given vertex.
 
 
 ### <a id="binary-heap"></a> Binary Heaps (Min Heaps and Max Heaps)
@@ -1573,12 +1573,16 @@ class Graph {
 }
 ```
 
+  
+#### <a id="bfs-vs-dfs-graph"></a>Breadth First Search vs Depth First Search
+- when implementing graph search, check if each node has been visited because graphs have multiple ways to get to the same place whereas trees only have one way
+  - **BFS** better for finding shortest path, while **DFS** better if solutions are farther from the path
+  - **DFS** are often used in simulations of games (and game-like situations in the real world). In a typical game you can choose one of several possible actions. Each choice leads to further choices, each of which leads to further choices, and so on into an ever-expanding tree-shaped graph of possibilities.
 
-#### Graph Search
-  - when implementing graph search, check if each node has been visited because graphs have multiple ways to get to the same place whereas trees only have one way
-  - **Breadth-First Search**: start at root and go to all neighbors of root before going to their neighbors
-    - use queue and store visited
-    - better for finding shortest path between nodes
+#### <a id="bfs-graph"></a>Breadth-First Search
+- start at root and go to all neighbors of root before going to their neighbors
+- use queue and store visited
+- better for finding shortest path between nodes
 
 ```
 // method inside of graph class
@@ -1601,9 +1605,10 @@ breadthFirstSearch(startVertex) {
   }
 }
 ```
-  - **Depth-First Search**: start at root and explore each branch completely before moving onto next branch
-    - preferred if we want to visit every node
-    - recursive
+#### <a id="dfs-graph"></a>Depth-First Search 
+- start at root and explore each branch completely before moving onto next branch
+- preferred if we want to visit every node
+- recursive
 ```
 depthFirstSearchIterative(startVertex) {
   let stack = [startVertex];
