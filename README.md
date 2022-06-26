@@ -26,19 +26,23 @@
     - [Divide and Conquer](#divide-conquer)
     - [Sliding Window](#sliding-window)
     - [Multiple Pointers](#multiple-pointers)
-  - [Recursion](#recursie-algorithms)
+  - [Recursion](#recursive-algorithms)
   - [Iterative](#iterative-algorithms)
   - [Dynamic Programming](#dynamic-programming)
   - [Math Algorithms](#math-algorithms)
-  - [Permutations vs Combinations](#permutation-combination)
+    - [Permutations vs Combinations](#permutation-combination)
   - [Search Algorithms](#search-algorithms)
     - [Linear Search](#linear-search)
     - [Binary Search](#binary-search)
   - [Sorting Algorithms](#sorting-algorithms)
-    - [Selection Sort](#selection-sort)
-    - [Insertion Sort](#insertion-sort)
-    - [Merge Sort](#merge-sort)
-    - [Quick Sort](#quick-sort)
+    - [Quadratic Sorting](#quadratic-sorting-algorithms)
+      - [Bubble Sort](#bubble-sort)
+      - [Selection Sort](#selection-sort)
+      - [Insertion Sort](#insertion-sort)
+    - [Faster/Complex Sorting Algorithms](#faster-sorting-algorithms)
+      - [Merge Sort](#merge-sort)
+      - [Quick Sort](#quick-sort)
+      - [Radix Sort](#radix-sort)
 - [System Design and Scalability](#system-design)
   - [Frontend](#frontend)
     - [How to handle lots of data on Front-end](#data-frontend)
@@ -1568,16 +1572,86 @@ export class MinHeap {
 ```
 
 ### <a id="prefix-tries"></a>Trie(Prefix Trees)
+[Trie data structure starts with empty root node](./assets/trie-data-structure.png)
+
 #### Definition
-- variant of n-any tree
+- tree-like data structure that efficiently stores and retrieves keys in a dataset of strings
+- Each trie has an empty root node, with links (or references) to other nodes — one for each possible alphabetic value. The shape and the structure of a trie is always a set of linked nodes, connecting back to an empty root node.
+-  nodes of the tree store the entire alphabet and strings/words can be retrieved by traversing down a branch path.
 - stores characters at each node
 - each path represents a word
 - Terminating Trie Node means word is complete
+- Uses: auto-complete and spellcheker
 
 #### Time Complexity
 - same run time as hash table 0(k) or O(1)
   - k = character length
+  - Find is` 0(p + n)` 
+    - p = length of prefix
+    - n = # of words
+  - Insert, Search, Delete is `O(a*n)`
+    - a = length of word being searched/inserted/deleted
+    - n = # of total words
+  - Space complexity is `0(n*k)`
+    - n = # of total words
+    - k = # of references each node is storing (26 for the English alphabet)
 
+#### Class
+```
+var Trie = function() {
+    this.root = {};
+};
+
+/**
+ * Inserts a word into the trie. 
+ * @param {string} word
+ * @return {void}
+ */
+Trie.prototype.insert = function(word) {  //dog -> this.root = {'d': {'o': 'g': {}}}
+    let node = this.root;
+    for(let letter of word) {
+        if (node[letter] === undefined) node[letter] = {};
+        node = node[letter]
+    }
+    node.isEnd = true;
+};
+
+/**
+ * Returns if the word is in the trie. 
+ * @param {string} word
+ * @return {boolean}
+ */
+Trie.prototype.search = function(word) {
+    let node = this.root
+    for(let letter of word) {
+        // check if current letter is in the node
+        if(!node[letter]) {
+            return false;
+        } else {
+            node = node[letter];
+        }
+    }
+
+    return node && node.isEnd === true;
+};
+
+/**
+ * Returns if there is any word in the trie that starts with the given prefix. 
+ * @param {string} prefix
+ * @return {boolean}
+ */
+Trie.prototype.startsWith = function(prefix) {
+    let node = this.root;
+    for(let letter of prefix) {
+        if(!node[letter]) {
+            return false;
+        } else {
+            node = node[letter];
+        }
+    }
+    return true;
+};
+```
 
 ### <a id="graphs"></a>Graphs
 #### Definition
@@ -1981,7 +2055,7 @@ function binarySearch(arr, elem) {
 ```
 
 ## <a id="sorting-algorithms"></a>Sorting Algorithms
-### Quadratic Sorting Algorithms
+### <a id="quadratic-sorting-algorithms"></a>Quadratic Sorting Algorithms
 | Sorting Type    | Best Time | Avg Time | Worst Time | Space |
 | --------------- | --------- | -------- | ---------- | ----- |
 | Bubble Sort     | 0(n)      | 0(n^2)   | 0(n^2)     | O(1)  |
@@ -1995,24 +2069,7 @@ function binarySearch(arr, elem) {
 #### <a id="bubble-sort"></a>Bubble Sort
 - sort and swap adjacent elements
 
-#### <a id="insertion-sort"></a>Insertion Sort
-
 #### <a id="selection-sort"></a>Selection Sort
-
-### Faster/Complex Sorting Algorithms
-| Sorting Type    | Best Time   | Avg Time    | Worst Time  | Space       |
-| --------------- | ----------- | ----------- | ----------- | ----------- |
-| MergeSort       | 0(n log n)  | 0(n log n)  |  0(n log n) | O(n)        |
-| QuickSort       | 0(n log n)  | 0(n log n)  |  0(n^2)     | O(log n)    |
-| RadixSort       | 0(nk)       | 0(nk)       |  0(nk)      | O(n + k)    |
-- k = # of digits
-
-- Bubble and Insertion sort perform well with nearly sorted data
-- all these 3 sorts have same avg and worst and best time and space complexity
-- all 3 of these are good for smaller sets of data
-
-### <a id="selection-sort"></a>Selection Sort
-#### Definition
 - A comparison based sorting algorithm.
   - Starts with the cursor on the left, iterating left to right
   - Compares the left side to the right, looking for the smallest known item
@@ -2040,8 +2097,7 @@ function binarySearch(arr, elem) {
 
 [(source: Wikipedia, _Selection Sort_)](https://en.wikipedia.org/wiki/Selection_sort)
 
-### <a id="insertion-sort"></a>Insertion Sort
-#### Definition
+#### <a id="insertion-sort"></a>Insertion Sort
 - A comparison based sorting algorithm.
   - Iterates left to right comparing the current cursor to the previous item.
   - If the cursor is smaller than the item on the left it swaps positions and the cursor compares itself again to the left hand side until it is put in its sorted position.
@@ -2064,6 +2120,20 @@ function binarySearch(arr, elem) {
 ![#](https://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif)
 
 [(source: Wikipedia, _Insertion Sort_)](https://en.wikipedia.org/wiki/Insertion_sort)
+
+
+### <a id="faster-sorting-algorithms"></a>Faster/Complex Sorting Algorithms
+| Sorting Type    | Best Time   | Avg Time    | Worst Time  | Space       |
+| --------------- | ----------- | ----------- | ----------- | ----------- |
+| MergeSort       | 0(n log n)  | 0(n log n)  |  0(n log n) | O(n)        |
+| QuickSort       | 0(n log n)  | 0(n log n)  |  0(n^2)     | O(log n)    |
+| RadixSort       | 0(nk)       | 0(nk)       |  0(nk)      | O(n + k)    |
+- k = # of digits
+
+- Bubble and Insertion sort perform well with nearly sorted data
+- all these 3 sorts have same avg and worst and best time and space complexity
+- all 3 of these are good for smaller sets of data
+
 
 ### <a id="merge-sort"></a>Merge Sort
 #### Definition
