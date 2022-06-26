@@ -1489,7 +1489,7 @@ function postOrderDFS() {
 ### <a id="binary-heap"></a> Binary Heaps (Min Heaps and Max Heaps)
 #### Definition
 - heap is a category of trees
-- completely binary tree filled from left to right (not necessarily all right have 2 child nodes yet)
+- **Completely Binary Tree** filled at every level, except possibly the last level, from left to right (not necessarily all right have 2 child nodes yet)
 - no relationship for siblings
 - **Min Heap** - each parent node < children -> root = min element
 - **Max Heap** - each parent node > children -> root = max element
@@ -1505,6 +1505,67 @@ function postOrderDFS() {
   - start by adding node to right-most node (or end of the array) and then swap (bubble up) to swap with parents to its place
 - if you double the nodes, you increase 1 extra step
 - worst case scenario is if the binary tree is not balanced (like SLL) -> 0(n) for search
+
+#### Class
+```
+export class MinHeap {
+   constructor(selector) {
+      this.items = []; 
+      this.selector = selector;
+   }
+   insert() {
+      let i = this.items.length;
+      this.items.push(item);
+      let parentIndex = Math.floor((i + 1) / 2 - 1);
+      if (parentIndex < 0) parentIndex = 0;
+      let parentVal = this.selector(this.items[parentIndex]);
+      const pushedVal = this.selector(this.items[i]);
+      while (i > 0 && parentVal > pushedVal) {
+         parentIndex = Math.floor((i + 1) / 2 - 1);
+         this.swap(i, parentIndex);
+         i = parentIndex;
+         parentVal = this.selector(
+         this.items[Math.max(Math.floor((i + 1) / 2 - 1), 0)]
+         );
+      }
+   }
+      remove() {
+      if (this.items.length <= 1) return this.items.pop();
+      const ret = this.items[0]; // What we will return
+      let temp = this.items.pop();
+      this.items[0] = temp; // Place last element in array at front
+      let i = 0; // We adjust heap from top to down
+      while (true) {
+         let rightChildIndex = (i + 1) * 2;
+         let leftChildIndex = (i + 1) * 2 - 1;
+         let lowest = rightChildIndex;
+         if (
+         leftChildIndex >= this.items.length &&
+         rightChildIndex >= this.items.length
+         )
+         break;
+         if (leftChildIndex >= this.items.length) lowest =        rightChildIndex;
+         if (rightChildIndex >= this.items.length) lowest =    leftChildIndex;
+         if (!(leftChildIndex >= this.items.length) &&
+         !(rightChildIndex >= this.items.length)
+          ) {
+         lowest =
+         this.selector(this.items[rightChildIndex]) <
+         this.selector(this.items[leftChildIndex])
+         ? rightChildIndex
+         : leftChildIndex;
+         } // Find the smallest child
+         // If the parent is greater than the smallest child: swap
+         if (this.selector(this.items[i]) >                         this.selector(this.items[lowest])) {
+         this.swap(i, lowest);
+         i = lowest;
+         } else break; // We have finished setting up the heap
+       }
+   // Return topmost element
+   return ret;
+   }
+}
+```
 
 ### <a id="tries"></a>Trie(Prefix Trees)
 #### Definition
@@ -1583,6 +1644,8 @@ class Graph {
 - start at root and go to all neighbors of root before going to their neighbors
 - use queue and store visited
 - better for finding shortest path between nodes
+- **Time complexity of BFS**: `O(V + E)` when **Adjacency List** is used and `O(V^2)` when **Adjacency Matrix** is used (V = vertices; E = edges)
+- higher **space complexity** than DFS b/c you use a queue
 
 ```
 // method inside of graph class
@@ -1608,7 +1671,11 @@ breadthFirstSearch(startVertex) {
 #### <a id="dfs-graph"></a>Depth-First Search 
 - start at root and explore each branch completely before moving onto next branch
 - preferred if we want to visit every node
-- recursive
+- recursive or use stack
+- better if solutions are farther from the path or explore all possible paths
+- - **Time complexity of DFS**: `O(V + E)` when **Adjacency List** is used and `O(V^2)` when **Adjacency Matrix** is used (V = vertices; E = edges)
+- has lesser **space complexity** than BFS, because at a time it needs to store only single path from the root to leaf node.
+
 ```
 depthFirstSearchIterative(startVertex) {
   let stack = [startVertex];
