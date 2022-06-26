@@ -1567,7 +1567,7 @@ export class MinHeap {
 }
 ```
 
-### <a id="tries"></a>Trie(Prefix Trees)
+### <a id="prefix-tries"></a>Trie(Prefix Trees)
 #### Definition
 - variant of n-any tree
 - stores characters at each node
