@@ -34,6 +34,7 @@
   - [Search Algorithms](#search-algorithms)
     - [Linear Search](#linear-search)
     - [Binary Search](#binary-search)
+  - [Maze/Matrix Algorithms](#maze-matrix-algos)
   - [Sorting Algorithms](#sorting-algorithms)
     - [Quadratic Sorting](#quadratic-sorting-algorithms)
       - [Bubble Sort](#bubble-sort)
@@ -1742,6 +1743,86 @@ breadthFirstSearch(startVertex) {
   }
 }
 ```
+- template for finding a node in a graph with BFS
+```
+function bfs(target) {
+  const queue = [[0, 0]]; // 1. Initialize queue with Node and current distance 0
+  const visited = new Set(0); // 2. Initialize set
+
+  for (const [current, distance] of queue) { // 3. Loop through queue until it's empty
+    if (current === target) return distance; // 4. Check dequeued is solution
+    for (const [neighbor, currDist] of getNeighbors(node)) { // 5. Get next possible moves (neighbor nodes)
+      if (visited.has(neighbor) continue; // 6. Skip visited nodes
+      visited.add(neighbor); // 7. Mark next node as visited.
+      queue.push([neighbor, currDist + 1]); // 8. Add neighbor to queue and increase the distance.
+    }
+  }
+
+  return -1; // 9. If you didn't find the answer, return something like -1/null/undefined.
+}
+
+function getNeighbors(node) {
+  // TODO: implement based on the problem.
+}
+```
+
+##### Algorithms
+- **Maze Path**
+You have a ball at a starting point, that can roll up, down, left and right. However, the ball won’t stop rolling until it hits a wall. Your task is to check if there’s a path from start to destination. You may assume that the borders of the maze are all walls. The maze is represented in a grid (2d array):
+  - Walls are represented as 1.
+  - Empty spaces are 0.
+```
+Example input:
+start = [ 0, 4 ]
+end = [ 4, 4 ]
+maze = [
+  [ 0, 0, 1, 0, 0 ],
+  [ 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 1, 0 ],
+  [ 1, 1, 0, 1, 1 ],
+  [ 0, 0, 0, 0, 0 ]
+]
+```
+```
+function hasPath(maze, start, destination) {
+    // looking for shortest way to destination and then cut -> use BFS
+    // empty spaces = 0
+    // walls = 1
+
+    let queue = [[start, 0]];  // [[[0,4], 0]] // [start, distance] inside of queue
+    const visited = new Set([start.join()]); // [04]
+    const directions = [[0,1], [0,-1], [1,0], [-1,0]]  // first index is row, second index is col -> right, left, top, bottom (like CSS)
+    
+    // loop through items in queue
+    for (let [[row, col], distance] of queue) {
+        if(row === destination[0] && col === destination[1] && maze[row] && maze[row][col] === 0) { //found destination AND that spot is an empty space (not a wall)
+            return true;
+        }
+        
+          // loop through neighboring directions
+        for (let [rowDirection, colDirection] of directions) {
+            // set coordinates to current to reset them
+            let newRow = row;
+            let newCol = col;
+            while(maze[newRow + rowDirection] && maze[newRow + rowDirection][newCol + colDirection] === 0) { // check that row exists first so we're not calling a property of undefined AND check that it is an empty wall (0), not a wall (1)
+                newRow += rowDirection;
+                newCol += colDirection;
+            }
+            if(visited.has([newRow, newCol].join())){
+                continue; // skip if we visited this cell already
+            } else {
+                // add to visited
+                visited.add([newRow, newCol].join())
+                queue.push([[newRow, newCol], distance + 1])
+            }
+        }
+    }
+  
+    return false; // if you loop through the entire maze and you don't find the destination, then return false;
+};
+```
+
+
 #### <a id="dfs-graph"></a>Depth-First Search 
 - start at root and explore each branch completely before moving onto next branch
 - preferred if we want to visit every node
@@ -1792,6 +1873,8 @@ depthFirstSearchRecursive(startVertex) {
 }
 ```
 
+#### <a id="bfs-graph"></a>Breadth-First Search
+
 #### Algorithms
 - **Bidirectional Search**: find shortest path between source and destination nodes
 ```
@@ -1799,7 +1882,6 @@ run 2 simultaneous breadth-first searches, 1 from each node -> when their search
 ```
 
 # <a id="algorithms"></a> Algorithms
-
 
 ### <a id="algorithm-techniques"></a>Techniques
 #### <a id="divide-conquer"></a> **Divide and Conquer**
@@ -2053,6 +2135,16 @@ function binarySearch(arr, elem) {
   }
 }
 ```
+
+## <a id="maze-matrix-algos"></a>Maze/Matrix Algorithms
+- **DFS**
+  - follow 1 path until we hit a dead end -> push intersections to **stack**
+  - if we hit a dead end, we will backtrack to previous intersection and follow a different path
+  - stop when we find exit or entire map has been visited
+- **BFS**
+  - enqueue every interesection in a **queue**
+  - visit all paths at same time 1 step at a time 
+  - stop when we find exit or until entire map has been visited
 
 ## <a id="sorting-algorithms"></a>Sorting Algorithms
 ### <a id="quadratic-sorting-algorithms"></a>Quadratic Sorting Algorithms
