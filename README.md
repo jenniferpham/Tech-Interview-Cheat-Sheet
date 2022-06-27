@@ -1837,6 +1837,10 @@ function getNeighbors(node) {
 ```
 
 ##### Algorithms
+- **Bidirectional Search**: find shortest path between source and destination nodes
+```
+run 2 simultaneous breadth-first searches, 1 from each node -> when their searches collide -> found path
+```
 - **Maze Path**
 You have a ball at a starting point, that can roll up, down, left and right. However, the ball won’t stop rolling until it hits a wall. Your task is to check if there’s a path from start to destination. You may assume that the borders of the maze are all walls. The maze is represented in a grid (2d array):
   - Walls are represented as 1.
@@ -1943,15 +1947,37 @@ depthFirstSearchRecursive(startVertex) {
 }
 ```
 
-#### <a id="bfs-graph"></a>Breadth-First Search
-
-#### Algorithms
-- **Bidirectional Search**: find shortest path between source and destination nodes
-```
-run 2 simultaneous breadth-first searches, 1 from each node -> when their searches collide -> found path
-```
 
 # <a id="algorithms"></a> Algorithms
+- **All Paths From Source to Target**
+Given a directed acyclic graph (DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.The graph is given as follows: graph[i] is a list of all nodes you can visit from node i (i.e., there is a directed edge from node i to node graph[i][j]).
+```
+var allPathsSourceTarget = function(graph) {
+    let currentNode = 0;
+    let currentPath = [];
+    let searchedElement = graph.length-1;
+    let paths = [];
+    
+    findPath(graph, currentNode, currentPath, searchedElement, paths);
+    
+    return paths;
+};
+
+
+var findPath = function(graph, currentNode, currentPath, searchedElement, paths) {    
+    currentPath.push(currentNode);
+
+    if(currentNode === searchedElement) {
+        paths.push(currentPath.slice());
+        return;
+    }    
+    
+    for(let node of graph[currentNode]) {
+        findPath(graph, node, currentPath, searchedElement, paths);
+        currentPath.pop();
+    }
+}
+```
 
 ### <a id="algorithm-techniques"></a>Techniques
 #### <a id="divide-conquer"></a> **Divide and Conquer**
