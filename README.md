@@ -1513,6 +1513,18 @@ function postOrderDFS() {
 }
 ```
 
+- LowestCommonAncestor of 2 nodes
+```
+function lowestCommonAncestor(root, p, q) {
+  if(!root || (root === p) || (root === q) ) return root;
+  const left = lowestCommonAncestor(root.left, p, q);
+  const right = lowestCommonAncestor(root.right, p, q);
+  if(!left) return right;
+  if(!right) return left;
+  return root;
+}
+```
+
 ### <a id="bfs-vs-dfs"></a>Breadth First Search vs Depth First Search
 - The simple answer to this question is that it depends on the size and shape of the tree.
   - BFS grows the tree level by level, whereas DFS grows it sub-tree by sub-tree. 
@@ -1531,77 +1543,102 @@ function postOrderDFS() {
 - heap is not natively represented in JS
 - **Represent Binary Heap as array**
   - n = index
-  - left child = 2n + 1
-  - right child = 2n + 2
-  - parent = Math.floor((n-1)/2)
+  - `left child = 2n + 1`  (Ex: if parent index = 0 -> left child is index 1 and right child is index 2)
+  - `right child = 2n + 2`
+  - `parent = Math.floor((n-1)/2)`  (Ex: if child is index 2 -> parent is index 0)
 - primarily used for getting the minimum or the maximum value present in a heap in `O(1)` time. The linear data structures like Arrays or LinkedList can get you this value in `O(n)` time while non-linear data structures like Binary Search Trees(BST) can get you this value in `O(log n)` time where n is the number of elements.
 
 #### Time Complexity
-- Search:    Binary Search Tree: `O(log n)`
-- Insertion: Binary Search Tree: `O(log n)`
+- Access the min/max value: `O(1)` time
+- Search:    `O(log n)`
+- Insertion and Removing: `O(log n)`
   - start by adding node to right-most node (or end of the array) and then swap (bubble up) to swap with parents to its place
-- get min/max value in a heap in `O(1)` time
 - if you double the nodes, you increase 1 extra step
 - worst case scenario is if the binary tree is not balanced (like SLL) -> `0(n)` for search
 
 #### Class
 ```
-export class MinHeap {
-   constructor(selector) {
-      this.items = []; 
-      this.selector = selector;
-   }
-   insert() {
-      let i = this.items.length;
-      this.items.push(item);
-      let parentIndex = Math.floor((i + 1) / 2 - 1);
-      if (parentIndex < 0) parentIndex = 0;
-      let parentVal = this.selector(this.items[parentIndex]);
-      const pushedVal = this.selector(this.items[i]);
-      while (i > 0 && parentVal > pushedVal) {
-         parentIndex = Math.floor((i + 1) / 2 - 1);
-         this.swap(i, parentIndex);
-         i = parentIndex;
-         parentVal = this.selector(
-         this.items[Math.max(Math.floor((i + 1) / 2 - 1), 0)]
-         );
-      }
-   }
-      remove() {
-      if (this.items.length <= 1) return this.items.pop();
-      const ret = this.items[0]; // What we will return
-      let temp = this.items.pop();
-      this.items[0] = temp; // Place last element in array at front
-      let i = 0; // We adjust heap from top to down
-      while (true) {
-         let rightChildIndex = (i + 1) * 2;
-         let leftChildIndex = (i + 1) * 2 - 1;
-         let lowest = rightChildIndex;
-         if (
-         leftChildIndex >= this.items.length &&
-         rightChildIndex >= this.items.length
-         )
-         break;
-         if (leftChildIndex >= this.items.length) lowest =        rightChildIndex;
-         if (rightChildIndex >= this.items.length) lowest =    leftChildIndex;
-         if (!(leftChildIndex >= this.items.length) &&
-         !(rightChildIndex >= this.items.length)
-          ) {
-         lowest =
-         this.selector(this.items[rightChildIndex]) <
-         this.selector(this.items[leftChildIndex])
-         ? rightChildIndex
-         : leftChildIndex;
-         } // Find the smallest child
-         // If the parent is greater than the smallest child: swap
-         if (this.selector(this.items[i]) >                         this.selector(this.items[lowest])) {
-         this.swap(i, lowest);
-         i = lowest;
-         } else break; // We have finished setting up the heap
-       }
-   // Return topmost element
-   return ret;
-   }
+class MinHeap {
+
+    constructor () {
+        this.heap = []
+    }
+
+    getMin () {
+        /* Accessing the min element at index 1 in the heap array */
+        return this.heap[0]
+    }
+    
+    insert (node) {
+
+        /* Inserting the new node at the end of the heap array */
+        this.heap.push(node)
+
+        /* Finding the correct position for the new node */
+
+        if (this.heap.length > 0) {
+            let current = this.heap.length - 1; // set current to last index
+
+            /* Traversing up the parent node until the current node (current) is smaller than the parent (current/2)*/
+                                    // child node                // its parent node
+            while (current > 1 && (this.heap[current] < this.heap[Math.floor(current/2)])) {
+
+                /* Swapping the two nodes (parent and child) by using the ES6 destructuring syntax*/
+                [this.heap[Math.floor(current/2)], this.heap[current]] = [this.heap[current], this.heap[Math.floor(current/2)]]
+                current = Math.floor(current/2)  // set current to its parent
+            }
+        }
+    }
+    
+    remove() {
+        /* Smallest element is at the index 1 in the heap array */
+        let smallest = this.heap[1]
+
+        /* When there are more than two elements in the array, we put the right most element at the first position
+            and start comparing nodes with the child nodes
+        */
+        if (this.heap.length > 2) {
+            this.heap[1] = this.heap[this.heap.length-1]
+            this.heap.splice(this.heap.length - 1)
+
+            if (this.heap.length === 3) {
+                if (this.heap[1] > this.heap[2]) {
+                    [this.heap[1], this.heap[2]] = [this.heap[2], this.heap[1]]
+                }
+                return smallest
+            }
+
+            let current = 1
+            let leftChildIndex = current * 2
+            let rightChildIndex = current * 2 + 1
+
+            while (this.heap[leftChildIndex] &&
+                    this.heap[rightChildIndex] &&
+                    (this.heap[current] > this.heap[leftChildIndex] ||
+                        this.heap[current] > this.heap[rightChildIndex])) {
+                if (this.heap[leftChildIndex] < this.heap[rightChildIndex]) {
+                    [this.heap[current], this.heap[leftChildIndex]] = [this.heap[leftChildIndex], this.heap[current]]
+                    current = leftChildIndex
+                } else {
+                    [this.heap[current], this.heap[rightChildIndex]] = [this.heap[rightChildIndex], this.heap[current]]
+                    current = rightChildIndex
+                }
+
+                leftChildIndex = current * 2
+                rightChildIndex = current * 2 + 1
+            }
+        }
+
+        /* If there are only two elements in the array, we directly splice out the first element */
+
+        else if (this.heap.length === 2) {
+            this.heap.splice(1, 1)
+        } else {
+            return null
+        }
+
+        return smallest
+    }
 }
 ```
 

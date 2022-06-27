@@ -22,20 +22,50 @@
 
 # <a id="web">Web</a>
 - When user types in URL into browser:
-1. Enter url into web browser
-2. DNS (domain name services) translates human-friendly domain name to computer friendly IP address (IP4 vs IP6)
-3. browser sends HTTP request to server
-4. server sends back HTTP response
-5. browser renders HTML
-6. brwoser sends request for additional objects embeded in HTML (images, CSS, JS)
-7. Once page is loaded, browser sends further async requests as needed
+    1. Enter url into web browser
+    2. DNS (domain name services) translates human-friendly domain name to computer friendly IP address (IP4 vs IP6)
+    3. browser sends HTTP request to server
+    4. server sends back HTTP response
+    5. browser renders HTML
+    6. brwoser sends request for additional objects embeded in HTML (images, CSS, JS)
+    7. Once page is loaded, browser sends further async requests as needed
+- **JSON** is a format that encodes objects in a string
+    - **Serialization**: object -> string
+    - **Deserialization**:   string -> object
+    ```
+    {foo: [1, 4, 7, 10], bar: "baz"}
+    //serializing into JSON will convert it into a string, which can be stored or sent anywhere
+    '{"foo":[1,4,7,10],"bar":"baz"}'
+    // receiver can then deserialize this string to get back the original object. 
+    ```
+- send data from a web page to a server without a page refresh
+    - Make an API request
+   - `img` tag technique, and can work across domains.
+    - Data can be sent via **query parameters** on a small 1x1 pixel blank image, i.e. `http://www.ad-company.com/blank.jpg?data=value`.
+    - Data is limited to: URL length limit depending on the browser. Web standard is 2048 characters.
+    - `Script` and `Link` tags are used to make a URL request to a server
+    - `Iframe` form can POST to an invisible iframe of a different domain, effectively sending data cross sites
+    - CORS headers
+    - POST requests on search
+Follow up 1: How do you get a return response for updating the page?
+
+Follow up 2: What if the server was a different domain?
+
+
 
 ## <a id="storage">Storage</a>
-- **Cookies**: small files on user's computer read by teh server-side (Remember: serve cookies)
+- **Cookies**: small files on user's computer read by the server-side (Remember: serve cookies)
   - storage capacity 4kb
   - accessed by either web server or client's computer
   - basically key and value store (hash table)
   - must be parsed to read
+  - **secure cookie** (set `secure` flag on cookie)
+    - can only be transmitted over an encrypted connection (i.e. HTTPS). They cannot be transmitted over unencrypted connections (i.e. HTTP). 
+    - makes the cookie less likely to be exposed to cookie theft via eavesdropping
+  - **HttpOnly cookie** flag (set `HttpOnly` flag on cookie)
+    - HttpOnly flag makes cookies inaccessible to client-side scripts, like JavaScript. Those cookies can only be edited by a server that processes the request.
+    - often added to cookies that may contain sensitive information about the user
+    - eliminates the threat of cookie theft via cross-site scripting (XSS)
   - use:
     - carry info from 1 session on website to another session
     - carry info between sessions on related websites
@@ -135,12 +165,25 @@ To reduce app load time
 
 ## <a id="security">Security</a>
 - **Cross-Origin Resource Sharing (CORS)** enables resources like JS, fonts, images on a webpage to be requested from an outside domain (recommended standard)
+    - uses **CORS headers** to give browser permission to let web app at 1 domain access resources from different domain
+    - if server doesn't respond with specific cross-origin headers, browser will not allow JS to access the response
+    ```
+    Access-Control-Allow-Origin: *  // wildcard - any
+    Access-Control-Allow-Origin: <origin>  // 1 specific origin
+    ```
+    - Limiting the possible Access-Control-Allow-Origin values to a set of allowed origins requires code on the server side to check the value of the Origin request header, compare that to a list of allowed origins, and then if the Origin value is in the list, set the Access-Control-Allow-Origin value to the same value as the Origin value.
   - `Same-Origin Policy` blocks web apps from making HTTP requests from different origins -> prevents attackers that plant scripts on various websites to make requests to sites with personal data (Ex: ads in Google ads)
-  - if server doesn't respond with specific cross-origin headers, browser will not allow JS to access the response
-  - uses **CORS headers** to give browser permission to let web app at 1 domain access resources from different domain
 - **Cross Site Scripting (XSS)** - security vulnerability where hackers try to inject HTML/Javascript ot steal confidential info from cookies and pass that info to themselves
   - solution: sanitize inputs, escape, don't use eval, update libraries
+- **Cross site request forgery (CSRF)**
+    - an attack that sends malicious requests from an authenticated user to an application. A successful CSRF attack can be devastating for both the business and user.
+    - A CSRF token is a unique, secret, unpredictable value that is generated by the server-side application and transmitted to the client in such a way that it is included in a subsequent HTTP request made by the client.
 - **URL manipulation** - security vulnerability where hackers pass info in query string parameters and alter info to get authentication of servers and steal critical data
+- **JSONP** requests data by loading a `<script>` element andenables sharing of data bypassing **same-origin policy**
+- **Cache Control** are HTTP headers that control caching in browsers and shared caches
+    - `max-age` - use this cached response until # of ms later
+    - `no store` - means don't cache
+    - `no cache` -  always check for content updates while reusing stored content
 
 ## <a id="auth">Authentication</a>
 - **Single Sign On**
@@ -184,12 +227,26 @@ To reduce app load time
 
 ## <a id="CSS">CSS</a>
 - [CSS Grid](https://css-tricks.com/snippets/css/complete-guide-grid/)
+- **CSS Grid vs Flexbox**
+    - flexbox is one-dimensional, while CSS Grid is two-dimensional. 
+    - Flexbox lays out items along either the horizontal or the vertical axis, so you have to decide whether you want a row-based or a column-based layout.
+    - Grid allows you to create two-dimensional layouts where you can precisely place grid items into cells defined by rows and columns.
 - CSS Specificity
   1. !important - 10000
   2. Inline Style - 1000
   3. ID - 100
   4. Class, Pseudoclass - 10
   5. Element, Pseudo-element - 1
+- **CSS Box Model** - content (text/images), padding, border, margin
+    - **innerWidth**: includes content + padding (no border and no margin)
+    - **outerWidth**: includes content + padding + **border** (no margin)
+- hide element
+    - `display: none` - remove from flow of the document
+    - `visibility: hidden` - still takes up space in the document but not visible
+
+
+
+- CSS Grid vs Flexbox 
 
 
 ## <a id="javascript">Javascript</a>
@@ -222,6 +279,28 @@ Array.isArray(bar) OR (bar !== null) && (bar.constructor === "object")
   - **null**: value of null is explicitly set
   - `typeof undefined;  // undefined`
   - `typeof null;  // "object"`
+- **Event Delegation**: Instead of adding an event listener to each and every similar element, we can add an event listener to a parent element and call an event on a particular target using the `.target` property of the event object. -> more efficient
+    - use `event.target` to access the tag that was clicked
+    - capturing and bubbling
+        1. `<ul>` element is clicked.
+        2. The event goes in the **capturing** phase.
+        3. It reaches the target (`<li>` in our case).
+        4. It switches to the **bubbling** phase.
+        5. When it hits the `<ul>` element, it runs the event listener.
+        6. Inside the listener function event.target is the element that was clicked.
+        7. Event.target provides us access to the `<li>` element that was clicked.
+- **Event bubbling and capturing** are two ways of event propagation in the HTML DOM API, when an event occurs in an element inside another element, and both elements have registered a handle for that event. The event propagation mode determines in which order the elements receive the event.
+    - With **bubbling** (bubble up), the event is first captured and handled by the innermost element and then propagated to outer elements.
+    - With **capturing** (trickle down), the event is first captured by the outermost element and propagated to the inner elements.
+- Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?
+    - `var person = Person()` invokes the Person as a function, and not as a constructor.Typically, the constructor does not return anything, hence invoking the constructor like a normal function will return undefined 
+    - `var person = new Person()` creates an instance of the Person object using the new operator, which inherits from Person.prototype.
+```
+function Person(name) {
+  this.name = name
+}
+
+```
 - **Promises**
   - JavaScript promise object can be in one of three states: `pending`, `resolved`, or `rejected`. While the value is not yet available, the Promise stays in the `pending` state. Afterwards, it transitions to one of the two states: `resolved` or `rejected` . A resolved promise stands for a successful completion. Due to errors, the promise may go in the rejected state.
 ```
@@ -350,6 +429,40 @@ class Events {
     }
   }
   ```
+  - `input: 10 + 20 + "30" -> output: "3030"`
+- `input: "10" + 20 + 30 -> output: "102030"`
+- Ways to debug
+    - console.log()
+    - debugger keyword
+    - Chrome dev tools
+- JS cons
+    - no support for multithreading and multiprocessing
+    - reading and writing of files not allowed
+    - no support for networking apps
+- **BOM- Browser Object Model**
+    - default object in browser is the **window**
+    - window object provides properties like
+        - document
+        - history (`history.back()`, `history.forward()`, `history.go(4)`)
+        - screen
+        - navigator
+        - location
+        - innerHeight
+        - innerWidth
+- `encodeURIComponent` should be used to encode a URI Component - a string that is supposed to be part of a URL. 
+    - encodes special characters including: , / ? : @ & = + $ #
+    - will not encode: ~!*()'
+- `encodeURI` should be used to encode a URI or an existing URL. 
+    - will not encode: ~!@#$&*()=:/,;?+'
+    - URLs can only have certain characters from the standard 128 character ASCII set. Reserved characters that do not belong to this set must be encoded.
+```
+let uri = "https://w3schools.com/my test.asp?name=ståle&car=saab";
+let encoded = encodeURIComponent(uri); // https%3A%2F%2Fw3schools.com%2Fmy%20test.asp%3Fname%3Dst%C3%A5le%26car%3Dsaab
+```
+- **Prototypical Inheritance**
+    - JS does not provide a class implementation per se (the class keyword is introduced in ES2015, but is syntactical sugar, JavaScript remains prototype-based).
+    - When it comes to inheritance, JavaScript only has one construct: objects. Each object has a private property which holds a link to another object called its prototype. That prototype object has a prototype of its own, and so on until an object is reached with null as its prototype. By definition, null has no prototype, and acts as the final link in this prototype chain.
+    - Nearly all objects in JavaScript are instances of Object, which has null as its prototype.
 
 ### <a id="js-string-methods">String Methods</a>
 - substring(startIndex, endIndexNotIncluding)  // can also take negative startIndex from end of string
