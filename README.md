@@ -774,6 +774,35 @@ function enqueuePQ(element) {
 }
 ```
 
+#### Algorithms
+- **Min Meeting Rooms**(https://leetcode.com/problems/meeting-rooms-ii/)
+Given an array of meeting time intervals intervals where intervals[i] = [starti, endi], return the minimum number of conference rooms required.
+```
+function minMeetingRooms(intervals) {
+    if (intervals.length === 0) return 0;
+    if (intervals.length === 1) return 1;
+  
+    intervals.sort((a, b) => a[0] - b[0])
+  
+    let rooms = []
+    
+    rooms.push(intervals[0][1])
+    for(let i = 1; i < intervals.length; i++) {
+        let addedToRoom = false
+        for(let x = 0; x < rooms.length; x++) {
+            if(rooms[x] <= intervals[i][0])  {
+                rooms[x] = intervals[i][1]
+                addedToRoom = true
+                break
+            }
+        }
+        if(!addedToRoom) rooms.push(intervals[i][1])
+        
+    }
+    return rooms.length
+};
+```
+
 
 ### <a id="stack"></a> Stacks (LIFO)
 #### What you need to know
@@ -1492,24 +1521,28 @@ function postOrderDFS() {
 
 
 ### <a id="binary-heap"></a> Binary Heaps (Min Heaps and Max Heaps)
+[min and max heap](./assets/min-max-heap.png)
 #### Definition
 - heap is a category of trees
 - **Completely Binary Tree** filled at every level, except possibly the last level, from left to right (not necessarily all right have 2 child nodes yet)
 - no relationship for siblings
 - **Min Heap** - each parent node < children -> root = min element
 - **Max Heap** - each parent node > children -> root = max element
+- heap is not natively represented in JS
 - **Represent Binary Heap as array**
   - n = index
   - left child = 2n + 1
   - right child = 2n + 2
   - parent = Math.floor((n-1)/2)
+- primarily used for getting the minimum or the maximum value present in a heap in `O(1)` time. The linear data structures like Arrays or LinkedList can get you this value in `O(n)` time while non-linear data structures like Binary Search Trees(BST) can get you this value in `O(log n)` time where n is the number of elements.
 
 #### Time Complexity
 - Search:    Binary Search Tree: `O(log n)`
 - Insertion: Binary Search Tree: `O(log n)`
   - start by adding node to right-most node (or end of the array) and then swap (bubble up) to swap with parents to its place
+- get min/max value in a heap in `O(1)` time
 - if you double the nodes, you increase 1 extra step
-- worst case scenario is if the binary tree is not balanced (like SLL) -> 0(n) for search
+- worst case scenario is if the binary tree is not balanced (like SLL) -> `0(n)` for search
 
 #### Class
 ```
