@@ -551,27 +551,33 @@ Milliseconds since Jan 1, 1970
 ## <a id="react">React</a>
 - fetch data
 ```
-import React, { useEffect, useState } from "react";
+// useRandomQuote.js
+import { useEffect, useState } from "react";
 
-export default function App() {
-    const [quote, setQuote] = useState("") // useState structure
+const useRandomQuote = (i) => {
+  const [quote, setQuote] = useState(""); // useState structure
 
-useEffect(() => {
-  const fetchKanyeQuote = async () => {
-    try {
-      const res = await fetch("https://api.kanye.rest/");
-      const data = await res.json();
+  useEffect(() => {
+    const fetchKanyeQuote = async () => {
+      try {
+        const res = await fetch("https://api.kanye.rest/");
+        const data = await res.json();
 
-      setQuote(data.quote); // setter function updates initialState value
-    } catch (error) {
-      console.error(error);
-    }
-  };
+        setQuote(data.quote); // setter function to update initial state val
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  fetchKanyeQuote();
-}, []);
+    fetchKanyeQuote();
+  }, [i]);
+
+  return quote; // remember to add this line
+};
+
+export default useRandomQuote;
 ```
-- component with custom hook
+- functional component that uses data from custom hook
 ```
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
@@ -651,6 +657,76 @@ function App() {
         const Home = React.lazy(() => import("./components/Home"));
         const About = React.lazy(() => import("./components/About"));
         ```
+- Determine mobile device on React
+    - check the `User-Agent` request header of the navigator -> not reliable and can be spoofed or change in future versions of browsers
+    - `Navigator.maxTouchPoints`:  read-only property of the Navigator interface returns the maximum number of simultaneous touch contact points are supported by the current device -> used to detect if device has touch screen or not
+```
+import { useState, useEffect } from "react";
+
+const DeviceDetector = () => {
+  const [deviceType, setDeviceType] = useState("");
+
+  useEffect(() => {
+    let hasTouchScreen = false;
+    if ("maxTouchPoints" in navigator) {
+      hasTouchScreen = navigator.maxTouchPoints > 0;
+    } else if ("msMaxTouchPoints" in navigator) {
+      hasTouchScreen = navigator.msMaxTouchPoints > 0;
+    } else {
+      const mQ = window.matchMedia && matchMedia("(pointer:coarse)");
+      if (mQ && mQ.media === "(pointer:coarse)") {
+        hasTouchScreen = !!mQ.matches;
+      } else if ("orientation" in window) {
+        hasTouchScreen = true; // deprecated, but good fallback
+      } else {
+        // Only as a last resort, fall back to user agent sniffing
+        var UA = navigator.userAgent;
+        hasTouchScreen =
+          /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+          /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+      }
+    }
+    if (hasTouchScreen) {
+      setDeviceType("Mobile");
+    } else {
+      setDeviceType("Desktop");
+    }
+  }, []);
+
+  return <div>I am rendered on: {deviceType}</div>;
+};
+
+export default DeviceDetector;
+```
+    - use NPM library `react-device-detect`
+```
+// Installation:
+npm install react-device-detect --save
+
+// The code:
+import React, { useState } from "react";
+import "./App.css";
+import { isMobile, browserName } from "react-device-detect";
+
+function App() {
+  return (
+    <div style={styles.container}>
+      {isMobile ? <h2>Mobile</h2> : <h2>Desktop</h2>}
+    </div>
+  );
+}
+
+// just a little styling
+const styles = {
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '15px'
+  }
+}
+
+export default App;
+```
 
 # <a id="references">References</a>
 CSS:
