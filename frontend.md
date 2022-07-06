@@ -4,6 +4,7 @@
 - [Web](#web)
   - [Storage](#storage)
   - [API](#api)
+    - [Status Codes](#status-codes)
     - [Rest API](#rest-api)
     - [GraphQL](#graphql)
   - [Performance](#performance)
@@ -81,6 +82,26 @@ Follow up 2: What if the server was a different domain?
 
 
 ## <a id="api">API</a>
+### <a id="status-codes">Status Codes</a>
+- POST
+    - **200 OK** - It’s the basic status code to tell the client everything went good. Since we don’t create endpoint accessible resource when creating an access token, we can use 200 as a status for that action.
+    - **201 Created** - The most fitting for Create operations. This code should signal backend-side resource creation and come along with a Location header that defines the most specific URL for that newly created resource. It’s also a good idea to include appropriate representation of the resource or at least one or more URLs to that resource in the response body.
+    - **202 Accepted** - Often used for asynchronous processing. This code tells the client that the request was valid, but its processing will finish sometime in the future. The response body should include an URL to the finished resource with some information about when it will be available, or an URL to some monitoring endpoint that tells the client when the resource is available.
+- PUT/PATCH
+    - 200 OK
+    - 202 Accepted - asynchronous
+    - 204 No Content - A proper code for updates that don’t return data to the client, for example when just saving a currently edited document.
+- DELETE
+    - 200 OK - Some people think a delete function of any kind should return the deleted element, so a representation of the deleted element can be included in the response body.
+    - **204 No Content** - The most fitting status code for this case. It’s better to reduce traffic and simply tell the client the deletion is complete and return no response body (as the resource has been deleted).
+    - 202 Accepted - If the deletion is asynchronous and takes some time, which is the case in distributed systems, it can be appropriate to return this code with some information or URL to tell the client when it will be deleted.
+- GET
+    - **200 OK** - Most of the read actions will be answered with a 200 OK status.
+    - 206 Partial Content - This code is useful for lists of content that are too big to be delivered in one response. It has to be used with a Range header field in the request. Usually, this header field defines the byte-range the backend should send to the client, but the unit can be freely assigned as long as both sides understand it.
+    - 308 Permanent Redirect - This tells the client to use another URL to access the resource and not use the current URL anymore. It’s helpful when we have multiple endpoints for one resource, but don’t want to implement reading from all of them.
+    - 304 Not Modified - Is used like 200 but without a body, so the client will be redirected to its locally cached representation from a previous read.
+
+
 ### <a id="rest-api">REST API</a>
 - **RESTful services**
   - implement CRUD using HTTP methods (GET, PUT, POST, DELETE)
@@ -318,6 +339,26 @@ promise.then(
     alert(err);
   }
 );
+```
+```
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('foo');
+  }, 300);
+});
+
+myPromise
+  .then(handleResolvedA, handleRejectedA)
+  .then(handleResolvedB, handleRejectedB)
+  .then(handleResolvedC, handleRejectedC);
+```
+    - Handling a rejected promise in each .then() has consequences further down the promise chain. Sometimes there is no choice, because an error must be handled immediately. In such cases we must throw an error of some type to maintain error state down the chain. On the other hand, in the absence of an immediate need, it is simpler to leave out error handling until a final .catch() statement. A .catch() is really just a .then() without a slot for a callback function for the case when the promise is resolved.
+```
+myPromise
+  .then(handleResolvedA)
+  .then(handleResolvedB)
+  .then(handleResolvedC)
+  .catch(handleRejectedAny);
 ```
 - Eventing system
 ```
@@ -577,6 +618,53 @@ const useRandomQuote = (i) => {
 
 export default useRandomQuote;
 ```
+- fetch data with loading and error state
+```
+import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setHasError(false);
+      try {
+        const res = await fetch(
+          'https://hn.algolia.com/api/v1/search?query=react',
+        );
+        const json = await res.json();
+        setData(json.hits);
+      } catch (error) {
+        setHasError(true);
+      }
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [setData]);
+
+  return (
+    <React.Fragment>
+      {hasError && <p>Something went wrong.</p>}
+      {isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <ul>
+          {data.map(item => (
+            <li key={item.ObjectId}>
+              <a href={item.url}>{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </React.Fragment>
+  );
+}
+
+export default App;
+```
 - functional component that uses data from custom hook
 ```
 import { StatusBar } from "expo-status-bar";
@@ -637,6 +725,19 @@ function App() {
   );
 }
 ```
+- async/await fetch data
+```
+async function fetchFunction() {
+  try{
+	const response = await fetch(`http://url.com`);
+	const json = await response.json();
+  }
+  catch(err) {
+    throw err;
+    console.log(err);
+  }
+}
+```
 - improve user experience or performance (React)
     - **Optimistic UI** is a pattern that you can use to simulate the results of a mutation and update the UI even before receiving a response from the server. 
         - instead of waiting for response from server, we can display that it was updated on UI, and save message in **queue** like SQS. When it is ready to be run, it can trigger a function or lambda to update the item in the database.
@@ -657,7 +758,7 @@ function App() {
         const Home = React.lazy(() => import("./components/Home"));
         const About = React.lazy(() => import("./components/About"));
         ```
-- Determine mobile device on React
+- Detect if user is on mobile device on React
     - check the `User-Agent` request header of the navigator -> not reliable and can be spoofed or change in future versions of browsers
     - `Navigator.maxTouchPoints`:  read-only property of the Navigator interface returns the maximum number of simultaneous touch contact points are supported by the current device -> used to detect if device has touch screen or not
 ```
@@ -698,6 +799,7 @@ const DeviceDetector = () => {
 
 export default DeviceDetector;
 ```
+    - detect width device
     - use NPM library `react-device-detect`
 ```
 // Installation:
@@ -726,6 +828,60 @@ const styles = {
 }
 
 export default App;
+```
+- **lazy loading**: a component or a part of code must get loaded when it is required aka **code splitting and data fetching**.
+    - React bundles the complete code and deploys all of it at the same time.
+    - a huge application and will cost a lot of unnecessary data transfer which can lead to slow loading of the website.
+    - Use when certain code/features will not be accessible to all the users or the user does not access it frequently -> best to load them when the user requests for it -> improves user experience and initial loading time.
+    - `React suspense` does lazy loading
+```
+import React, { Suspense } from "react";
+const Customer = React.lazy(() => import("./Customer.js"));
+const Admin = React.lazy(() => import("./Admin.js"));
+
+//Instead of regular import statements, we will use the above approach for lazy loading
+
+export default (props) => {
+	if (props.user === "admin") {
+		return (
+			// fallback component is rendered until our main component is loaded
+			<Suspense fallback={<div>Loading</div>}>
+				<Admin />
+			</Suspense>
+		);
+	} else if (props.user === "customer") {
+		return (
+			<Suspense fallback={<div>Loading</div>}>
+				<Customer />
+			</Suspense>
+		);
+	} else {
+		return <div> Invalid User </div>;
+	}
+};
+```
+```
+import React, { lazy, Suspense } from ‘react’;
+import ReactDOM from ‘react-dom’;
+import ‘./index.css’;
+
+const Artists = lazy(() => import(‘./Artists’))
+const Performers = lazy(() => import(‘./Performers’))
+
+// Suspense wraps multiple imports and shows fallback
+class App extends React.Component {
+ render(){
+  return(
+   <div className=”App”>
+    <Suspense fallback={<h1>Still Loading…</h1>}>
+     <Artists />
+     <Performers />
+    </Suspense>
+   </div>
+  );
+ }
+}
+ReactDOM.render(<App />, document.getElementById(‘root’));
 ```
 
 # <a id="references">References</a>
@@ -759,3 +915,4 @@ Fetch data: https://www.freecodecamp.org/news/fetch-data-react/
 React Native
 https://www.bestinterviewquestion.com/react-native-interview-questions 
 https://www.educative.io/blog/top-react-native-interview-questions 
+Lazy loading in React: https://www.loginradius.com/blog/engineering/lazy-loading-in-react/
