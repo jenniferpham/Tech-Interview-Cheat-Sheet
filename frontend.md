@@ -282,6 +282,7 @@ To reduce app load time
 ## <a id="accessibility">Accessibility</a>
 - alt text
 - color contrast
+- semantic html
 - headers for structure
 - form inputs
   - have labels
