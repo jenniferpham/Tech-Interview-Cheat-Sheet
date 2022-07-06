@@ -126,6 +126,59 @@ mutation AddNewPet ($name: String!, $petType: PetType) {
   }
 }
 ```
+- **Apollo Client cache**: Apollo Client stores the results of your GraphQL queries in a local, normalized, **in-memory cache**. This enables Apollo Client to respond almost immediately to queries for already-cached data, without even sending a network request.
+- Subscribe to data
+Ex: Let's say we want our GraphQL server to push an update to our client as soon as a new comment is added to the post. First we need to define the subscription that Apollo Client will execute when the COMMENTS_QUERY returns:
+```
+const COMMENTS_SUBSCRIPTION = gql`
+  subscription OnCommentAdded($postID: ID!) {
+    commentAdded(postID: $postID) {
+      id
+      content
+    }
+  }
+`;
+
+--------
+
+function CommentsPageWithData({ params }) {
+  const { subscribeToMore, ...result } = useQuery(
+    COMMENTS_QUERY,
+    { variables: { postID: params.postID } }
+  );
+
+  return (
+    <CommentsPage
+      {...result}
+      subscribeToNewComments={() =>
+        subscribeToMore({
+          document: COMMENTS_SUBSCRIPTION,  // subscription to execute
+          variables: { postID: params.postID },  // variables to include when executing the subscription
+
+          // function that tells Apollo Client how to combine the query's currently cached result (prev) with the subscriptionData that's pushed by our GraphQL server. The return value of this function completely replaces the current cached result for the query.
+          updateQuery: (prev, { subscriptionData }) => {   
+            if (!subscriptionData.data) return prev;
+            const newFeedItem = subscriptionData.data.commentAdded;
+
+            return Object.assign({}, prev, {
+              post: {
+                comments: [newFeedItem, ...prev.post.comments]
+              }
+            });
+          }
+        })
+      }
+    />
+  );
+}
+
+---
+export class CommentsPage extends Component {
+  componentDidMount() {
+    this.props.subscribeToNewComments();
+  }
+}
+```
 
 ## <a id="performance">Performance</a>
 To reduce app load time
